@@ -1,0 +1,209 @@
+/* 기본 스타일 */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f5f5f5;
+    margin: 0;
+    padding: 20px;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+h1 {
+    font-size: 24px;
+    margin-bottom: 20px;
+}
+
+/* 캘린더 스타일 */
+#calendar-container {
+    width: 90%;
+    max-width: 800px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+}
+
+.day-cell {
+    width: 130px;
+    border: 1px solid #ddd;
+    padding: 10px;
+    text-align: center;
+    background-color: #ffffff;
+    border-radius: 4px;
+    box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* 시간대 버튼 스타일 */
+.time-slots {
+    margin-top: 15px;
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.time-slot {
+    padding: 5px;
+    margin: 5px 0;
+    border-radius: 4px;
+    text-align: center;
+    font-size: 14px;
+}
+
+/* 예약된 시간대 스타일 */
+.reserved {
+    background-color: #ffcccc;
+    color: #d32f2f;
+    cursor: not-allowed;
+}
+
+/* 예약 가능 시간대 스타일 */
+.available {
+    background-color: #ccffcc;
+    color: #00796b;
+    cursor: pointer;
+}
+
+/* 선택된 시간대 스타일 */
+.selected {
+    background-color: #a5d6a7;
+    color: #ffffff;
+    border: 2px solid #00796b;
+}
+
+/* 방 정보 스타일 */
+.room {
+    background-color: #e8f8f5;
+    border: 1px solid #cfe8e4;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.room-header {
+    display: flex;
+    align-items: center;
+}
+
+.room-info h2 {
+    margin: 0;
+    font-size: 20px;
+    color: #333;
+}
+
+.room-info p {
+    font-size: 14px;
+    color: #555;
+}
+
+/* 옵션 선택 스타일 */
+.options {
+    margin-top: 15px;
+}
+
+.options label {
+    font-weight: bold;
+    margin-right: 10px;
+}
+
+.options select {
+    padding: 5px;
+    font-size: 14px;
+}
+
+/* 예약 요약 스타일 */
+.reservation-summary {
+    background-color: #e0e0e0;
+    padding: 20px;
+    border-radius: 8px;
+    margin-top: 20px;
+}
+
+.reservation-summary h2 {
+    margin-top: 0;
+}
+
+.reservation-summary p {
+    margin: 5px 0;
+}
+
+.reservation-summary button {
+    background-color: #333;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    margin-top: 10px;
+}
+
+/* 예약자 정보 입력 폼 스타일 */
+.form-group {
+    background-color: #ffffff;
+    padding: 20px;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    font-weight: bold;
+    display: block;
+    margin-bottom: 5px;
+}
+
+.form-group span {
+    color: red;
+}
+
+input[type="text"], input[type="email"], select, textarea {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+    box-sizing: border-box;
+    margin-bottom: 10px;
+}
+
+textarea {
+    resize: vertical;
+    min-height: 100px;
+}
+
+/* 학번 - 이름 입력 스타일 */
+.contact-input {
+    display: flex;
+    gap: 5px;
+}
+
+.contact-input input[type="text"] {
+    width: calc(50% - 5px);
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+/* 예약 버튼 스타일 */
+button {
+    width: 100%;
+    padding: 10px;
+    background-color: #333;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 16px;
+    cursor: pointer;
+    margin-top: 20px;
+}
+
+/* 힌트 스타일 */
+.hint {
+    font-size: 12px;
+    color: #388e3c;
+    margin-top: 5px;
+}
