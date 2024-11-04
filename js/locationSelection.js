@@ -1,4 +1,4 @@
-import { db } from './js/firebaseConfig.js';
+import { db } from './firebaseConfig.js';
 import { doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
 
 let selectedRooms = {}; // 선택된 방과 시간대를 저장하는 객체
