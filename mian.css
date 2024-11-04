@@ -1,0 +1,163 @@
+/* 기본 스타일 */
+body {
+    font-family: Arial, sans-serif;
+}
+
+/* 헤더 스타일 */
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 20px;
+    border-bottom: 3px solid #5f5252; /* 아래쪽 붉은색 선 */
+    box-shadow: 0px 2px 2px rgba(63, 59, 48, 0.1); /* 하단 그림자 */
+}
+
+/* 타이틀 스타일 */
+.header-title {
+    font-size: 24px;
+    font-weight: bold;
+}
+
+/* 날짜 네비게이션 스타일 */
+.header-nav {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.header-nav a {
+    text-decoration: none;
+    color: #A9A9A9;
+    font-size: 20px;
+}
+
+.header-nav span {
+    font-size: 20px;
+    color: #333;
+}
+
+/* 버튼 스타일 */
+.header-button {
+    padding: 8px 16px;
+    font-size: 16px;
+    border: 1px solid #333;
+    border-radius: 5px;
+    background-color: white;
+    color: #333;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.header-button:hover {
+    background-color: #f0f0f0;
+}
+
+.schedule-container {
+    width: 90%;
+    max-width: 1200px; /* 테이블 최대 너비 */
+    margin: 0 auto;
+    
+}
+
+.schedule-table {
+    
+    width: 100%; 
+    border-collapse: collapse;
+    box-shadow: #000000;
+    text-align: center; 
+}
+
+
+.time-slot.reserved {
+    background-color: #ffffff; /* 예약된 시간 슬롯의 색상 */
+}
+
+.schedule-table th, .schedule-table td {
+    
+    border: none;
+    padding: 15px;
+    font-size: 16px;
+}
+
+.schedule-table th {
+    background-color: #ffffff;
+    font-weight: bold;
+}
+
+.schedule-table td button {
+    
+    padding: 16px 60px;
+    font-size: 18px;
+    color: #66707d;
+    background-color: #dcf4ed;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.schedule-table td button.reserved {
+    background-color: #ccc;
+    cursor: default;
+}
+
+
+
+.calendar {
+    width: 80%;
+    max-width: 600px;
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.calendar-header {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    text-align: center;
+    font-weight: bold;
+    color: #999;
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 10px;
+}
+
+.day:nth-child(1) {
+    color: #e57373; /* 일요일 색상 */
+}
+
+.day:nth-child(7) {
+    color: #64b5f6; /* 토요일 색상 */
+}
+
+.calendar-body {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 10px;
+    padding-top: 10px;
+}
+
+.date {
+    text-align: center;
+    padding: 10px 0;
+    border-top: 1px solid #ddd;
+    color: #555;
+    font-size: 16px;
+}
+
+.empty {
+    visibility: hidden;
+}
+
+.today {
+    background-color: #333;
+    color: white;
+    border-radius: 50%;
+    font-weight: bold;
+}
+
+.special {
+    color: #bbb;
+    font-size: 14px;
+    font-weight: normal;
+}
