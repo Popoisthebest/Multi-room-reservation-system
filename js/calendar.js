@@ -1,4 +1,4 @@
-import { db } from '/firebaseConfig.js';
+import { db } from './firebaseConfig.js';
 import { doc, getDoc } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
 
 document.addEventListener("DOMContentLoaded", function() {

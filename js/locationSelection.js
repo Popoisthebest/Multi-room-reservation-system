@@ -1,4 +1,4 @@
-import { db } from '/firebaseConfig.js';
+import { db } from './firebaseConfig.js';
 import { doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
 
 let selectedRooms = {}; // 선택된 방과 시간대를 저장하는 객체
@@ -125,5 +125,5 @@ window.submitReservations = async function submitReservations() {
 
     alert("모든 예약이 완료되었습니다!");
     // 예약 후 캘린더 페이지로 이동
-    window.location.href = 'calendar.html';
+    window.location.href = './calendar.html';
 }
