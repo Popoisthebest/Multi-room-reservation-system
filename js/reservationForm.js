@@ -25,10 +25,11 @@ document.addEventListener("DOMContentLoaded", function() {
 // 예약 정보 저장하기
 document.getElementById("reservation-form").addEventListener("submit", async function(event) {
     event.preventDefault();
-    const name = document.getElementById("name").value;
+    const club = document.getElementById("club").value;
+    const student = document.getElementById("student").value;
     const contact = `${document.getElementById("contact-prefix").value}-${document.getElementById("contact-middle").value}-${document.getElementById("contact-last").value}`;
     const email = document.getElementById("email").value;
-    const request = document.getElementById("request").value;
+    const purpose = document.getElementById("purpose").value;
 
     const selectionData = JSON.parse(localStorage.getItem("reservationSelection"));
     const { rooms, date } = selectionData;
@@ -50,10 +51,11 @@ document.getElementById("reservation-form").addEventListener("submit", async fun
                     room: room,
                     status: true,
                     customer: {
-                        name: name,
+                        club: club,
+                        student: student,
                         contact: contact,
                         email: email,
-                        request: request
+                        purpose: purpose
                     }
                 };
 
