@@ -40,7 +40,7 @@ function renderCalendar() {
 
 async function checkReservationStatus(date, slot, timeSlotElement) {
     // 'room'은 필요 시 특정 방을 지정할 수 있습니다. 모든 방에 대해 예약 상태를 체크할 수 있습니다.
-    const rooms = ["roomA", "roomB", "roomC", "roomD"]; // 사용 가능한 방 목록
+    const rooms = ["멀티실 1", "멀티실 2", "멀티실 3", "멀티실 4"]; // 사용 가능한 방 목록
     let isReserved = false; // 예약 여부 플래그
 
     for (const room of rooms) {
