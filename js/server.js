@@ -70,7 +70,7 @@ app.post('/reserve', async (req, res) => {
             from: process.env.EMAIL_USER,
             to: email,
             subject: '예약 확인서',
-            text: `안녕하세요 ${student}님,\n\n예약이 성공적으로 완료되었습니다.\n\n예약 정보:\n- 날짜: ${date}\n- 동아리/단체: ${club}\n- 사용 목적: ${purpose}\n\n감사합니다.`
+            text: `안녕하세요 ${student}님,\n\n예약이 성공적으로 완료되었습니다.\n\n예약 정보:\n- 날짜: ${date}\n- 선택 시간: ${time}\n- 동아리/단체: ${club}\n- 사용 목적: ${purpose}\n\n감사합니다.`
         };
 
         await transporter.sendMail(mailOptions);
