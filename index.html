@@ -6,6 +6,39 @@
     <title>멀티실 예약 시스템</title>
 </head>
 <body>
-    
+    <h1>멀티실 예약 시스템</h1>
+    <p>현재 예약 현황:</p>
+    <ul id="reservationList"></ul>
+    <button id="startButton">예약 시작</button>
+
+    <script type="module">
+        import { db } from '/js/firebase.js';
+        import { collection, getDocs } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
+
+        async function loadReservations() {
+            const querySnapshot = await getDocs(collection(db, "reservations"));
+            const reservationList = document.getElementById("reservationList");
+            reservationList.innerHTML = "";
+
+            querySnapshot.forEach((doc) => {
+                const data = doc.data();
+                const locations = data.locations ? data.locations.join(", ") : "N/A";
+                const timeSlots = data.timeSlots ? data.timeSlots.join(", ") : "N/A";
+                const studentName = data.studentName || "Unknown";
+
+                const listItem = document.createElement("li");
+                listItem.textContent = `${data.date}: ${locations} - ${timeSlots} - ${studentName}`;
+                reservationList.appendChild(listItem);
+            });
+        }
+
+        function startReservation() {
+            window.location.href = '/html/location_selection.html';
+        }
+
+        document.getElementById('startButton').addEventListener('click', startReservation);
+
+        loadReservations(); // 페이지 로드 시 예약 현황 불러오기
+    </script>
 </body>
 </html>

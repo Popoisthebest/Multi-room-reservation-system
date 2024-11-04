@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>예약자 정보 입력</title>
+</head>
+<body>
+    <h1>예약자 정보 입력</h1>
+    <section>
+        <label>동아리 이름: <input type="text" id="clubName"></label><br>
+        <label>학번: <input type="text" id="studentID"></label><br>
+        <label>학생 이름: <input type="text" id="studentName"></label><br>
+        <label>예약 목적: <input type="text" id="purpose"></label>
+    </section>
+    <button id="submitButton">예약하기</button>
+
+    <script type="module">
+        import { submitReservation } from '/js/reservation.js';
+
+        // 버튼 클릭 시 submitReservation 호출
+        document.getElementById('submitButton').addEventListener('click', () => {
+            submitReservation();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>시간 선택</title>
+</head>
+<body>
+    <h1>시간 선택</h1>
+    <section>
+        <h2>시간대를 선택하세요</h2>
+        <label><input type="checkbox" name="timeSlot" value="CIP1"> CIP1</label>
+        <label><input type="checkbox" name="timeSlot" value="CIP2"> CIP2</label>
+        <label><input type="checkbox" name="timeSlot" value="CIP3"> CIP3</label>
+    </section>
+    <button id="nextButton">다음</button>
+
+    <script type="module">
+        import { db } from '/js/firebase.js';
+        import { storeData } from '/js/reservation.js';
+        import { collection, getDocs, query, where } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
+
+        async function disableReservedSlots() {
+            const selectedDate = JSON.parse(localStorage.getItem('selectedDate'));
+            const q = query(collection(db, "reservations"), where("date", "==", selectedDate));
+            const querySnapshot = await getDocs(q);
+
+            const reservedSlots = [];
+            querySnapshot.forEach((doc) => {
+                reservedSlots.push(...doc.data().timeSlots);
+            });
+
+            document.querySelectorAll('input[name="timeSlot"]').forEach(input => {
+                if (reservedSlots.includes(input.value)) {
+                    input.disabled = true;
+                }
+            });
+        }
+
+        function goToNextPage() {
+            const selectedTimeSlots = Array.from(document.querySelectorAll('input[name="timeSlot"]:checked')).map(input => input.value);
+            storeData('selectedTimeSlots', selectedTimeSlots);
+            window.location.href = 'reservation_info.html';
+        }
+
+        document.getElementById('nextButton').addEventListener('click', goToNextPage);
+        disableReservedSlots(); // 페이지 로드 시 예약된 슬롯 비활성화
+    </script>
+</body>
+</html>

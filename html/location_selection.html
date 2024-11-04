@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>장소 선택</title>
+</head>
+<body>
+    <h1>장소 선택</h1>
+    <section>
+        <h2>장소를 선택하세요</h2>
+        <label><input type="checkbox" name="location" value="Room1"> Room1</label>
+        <label><input type="checkbox" name="location" value="Room2"> Room2</label>
+        <label><input type="checkbox" name="location" value="Room3"> Room3</label>
+        <label><input type="checkbox" name="location" value="Room4"> Room4</label>
+    </section>
+    <button id="nextButton">다음</button>
+
+    <!-- 모듈 스크립트 -->
+    <script type="module">
+        import { storeData } from '/js/reservation.js';
+
+        // 다음 페이지로 이동하는 함수
+        function goToNextPage() {
+            const selectedLocations = Array.from(document.querySelectorAll('input[name="location"]:checked')).map(input => input.value);
+            storeData('selectedLocations', selectedLocations);
+            window.location.href = 'calendar_selection.html';
+        }
+
+        // 버튼 클릭 시 goToNextPage 실행
+        document.getElementById('nextButton').addEventListener('click', goToNextPage);
+    </script>
+</body>
+</html>
