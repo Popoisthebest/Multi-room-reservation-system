@@ -1,0 +1,159 @@
+#calendar-container {
+    width: 90%;
+    max-width: 800px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+}
+
+.day-cell {
+    width: 100px;
+    border: 1px solid #ddd;
+    padding: 10px;
+    text-align: center;
+}
+
+.time-slot {
+    padding: 5px;
+    margin: 5px 0;
+    border-radius: 4px;
+}
+
+.reserved {
+    background-color: #f1f1f1;
+    color: #FFCCCC;
+    cursor: not-allowed;
+}
+
+.available {
+    background-color: #e0f7fa;
+    color: #CCFFCC;
+    cursor: pointer;
+}
+
+
+/* 기본 스타일 */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f5f5f5;
+    margin: 0;
+    padding: 20px;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+h1 {
+    font-size: 24px;
+    margin-bottom: 20px;
+}
+
+/* 방 정보 스타일 */
+.room {
+    background-color: #e8f8f5;
+    border: 1px solid #cfe8e4;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.room-header {
+    display: flex;
+    align-items: center;
+}
+
+.room-header img {
+    width: 150px;
+    height: 100px;
+    object-fit: cover;
+    border-radius: 4px;
+    margin-right: 20px;
+}
+
+.room-info h2 {
+    margin: 0;
+    font-size: 20px;
+    color: #333;
+}
+
+.room-info p {
+    font-size: 14px;
+    color: #555;
+}
+
+/* 시간대 버튼 스타일 */
+.time-slots {
+    margin-top: 15px;
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.time-slot {
+    padding: 8px 15px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.time-slot.reserved {
+    background-color: #FFCCCC;
+    color: #000000;
+    cursor: not-allowed;
+}
+
+.time-slot.available {
+    background-color: #CCFFCC;
+    color: #000000;
+    cursor: pointer;
+}
+
+/* 옵션 선택 스타일 */
+.options {
+    margin-top: 15px;
+}
+
+.options label {
+    font-weight: bold;
+    margin-right: 10px;
+}
+
+.options select {
+    padding: 5px;
+    font-size: 14px;
+}
+
+/* 예약 요약 스타일 */
+.reservation-summary {
+    background-color: #e0e0e0;
+    padding: 20px;
+    border-radius: 8px;
+    margin-top: 20px;
+}
+
+.reservation-summary h2 {
+    margin-top: 0;
+}
+
+.reservation-summary p {
+    margin: 5px 0;
+}
+
+.reservation-summary button {
+    background-color: #333;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    margin-top: 10px;
+}
+
+.reservation-summary button:hover {
+    background-color: #555;
+}
