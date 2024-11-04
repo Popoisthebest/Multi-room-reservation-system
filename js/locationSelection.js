@@ -48,8 +48,9 @@ async function loadTimeSlots(date, room, container) {
     const times = ["점심시간", "CIP 1", "CIP 2", "CIP 3"];
     
     container.innerHTML = ""; // 초기화
-    times.forEach(async time => {
-        const reservationId = `${date}_${time}_${room}`;
+    for (const time of times) {
+        // room을 roomNames[room]으로 변환하여 reservationId 생성
+        const reservationId = `${date}_${time}_${roomNames[room]}`;
         const reservationRef = doc(db, "reservations", reservationId);
         const timeSlot = document.createElement("button");
         timeSlot.classList.add("time-slot");
@@ -57,10 +58,12 @@ async function loadTimeSlots(date, room, container) {
 
         try {
             const docSnapshot = await getDoc(reservationRef);
+            console.log(`Checking reservation for ${reservationId}:`, docSnapshot.data());
             if (docSnapshot.exists() && docSnapshot.data().status) {
                 // 예약된 시간
                 timeSlot.classList.add("reserved");
                 timeSlot.disabled = true;
+                timeSlot.innerText += " (예약됨)";
             } else {
                 // 예약 가능한 시간
                 timeSlot.classList.add("available");
@@ -71,10 +74,16 @@ async function loadTimeSlots(date, room, container) {
         }
 
         container.appendChild(timeSlot);
-    });
+    }
 }
 
+
 function toggleTimeSlot(room, time, timeSlotElement) {
+    // 방에 대한 배열이 초기화되지 않은 경우 빈 배열로 설정
+    if (!selectedRooms[room]) {
+        selectedRooms[room] = [];
+    }
+
     if (selectedRooms[room].includes(time)) {
         // 시간대가 이미 선택된 경우 제거
         selectedRooms[room] = selectedRooms[room].filter(t => t !== time);
