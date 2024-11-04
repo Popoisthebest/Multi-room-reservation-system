@@ -1,4 +1,4 @@
-##해당 사이트
+## 해당 사이트
 https://popoisthebest.github.io/Multi-room-reservation-system/
 
 ## 협업 규칙 (Collaboration Guidelines)
