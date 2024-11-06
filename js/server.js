@@ -42,9 +42,11 @@ const transporter = nodemailer.createTransport({
 app.post('/reserve', async (req, res) => {
     const { rooms, date, club, student, contact, email, purpose } = req.body;
 
-    console.log('수신자 이메일:', email); // 이메일 값 확인
+    console.log('수신자 이메일:', email);
 
     try {
+        let allTimes = []; // 모든 시간을 수집할 배열
+
         for (const room in rooms) {
             for (const time of rooms[room]) {
                 const reservationId = `${date}_${time}_${room}`;
@@ -63,6 +65,7 @@ app.post('/reserve', async (req, res) => {
                     }
                 };
                 await reservationRef.set(reservationData);
+                allTimes.push(`${room} - ${time}`); // 모든 예약 시간과 방 정보를 수집
             }
         }
 
@@ -70,7 +73,7 @@ app.post('/reserve', async (req, res) => {
             from: process.env.EMAIL_USER,
             to: email,
             subject: '예약 확인서',
-            text: `안녕하세요 ${student}님,\n\n예약이 성공적으로 완료되었습니다.\n\n예약 정보:\n- 날짜: ${date}\n- 선택 시간: ${time}\n- 동아리/단체: ${club}\n- 사용 목적: ${purpose}\n\n감사합니다.`
+            text: `안녕하세요 ${student}님,\n\n예약이 성공적으로 완료되었습니다.\n\n예약 정보:\n- 날짜: ${date}\n- 예약된 시간 및 방: ${allTimes.join(', ')}\n- 동아리/단체: ${club}\n- 사용 목적: ${purpose}\n\n감사합니다.`
         };
 
         await transporter.sendMail(mailOptions);
@@ -80,6 +83,7 @@ app.post('/reserve', async (req, res) => {
         res.status(500).send('예약 중 오류가 발생했습니다.');
     }
 });
+
 
 app.listen(3000, () => {
     console.log('서버가 3000번 포트에서 실행 중입니다.');

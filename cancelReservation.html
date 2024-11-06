@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>예약 취소</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>예약 취소</h1>
+        <form id="search-reservation-form">
+            <div class="form-group">
+                <label for="student-id">학번</label>
+                <input type="text" id="student-id" required>
+            </div>
+            <div class="form-group">
+                <label for="student-name">이름</label>
+                <input type="text" id="student-name" required>
+            </div>
+            <div class="form-group">
+                <label for="email">이메일</label>
+                <input type="email" id="email" required>
+            </div>
+            <button type="submit" class="search-button">예약 조회</button>
+        </form>
+
+        <div id="reservation-list" class="reservation-list">
+            <!-- 예약된 모든 날짜, 장소, 시간이 카드 형식으로 표시됩니다 -->
+        </div>
+
+        <button id="cancel-selected-button" class="cancel-button" style="display: none;">선택한 예약 취소</button>
+    </div>
+
+    <script type="module" src="./js/cancelReservation.js"></script>
+</body>
+</html>
