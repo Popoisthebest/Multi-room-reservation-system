@@ -1,11 +1,11 @@
 import { db } from './firebaseConfig.js';
-import { collection, query, where, getDocs, orderBy } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
+import { collection, query, getDocs, orderBy } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
 
 document.addEventListener("DOMContentLoaded", async function() {
     const container = document.getElementById("reservation-status-container");
 
     try {
-        // 날짜 순서로 모든 예약 조회
+        // Query reservations, ordered by date
         const q = query(collection(db, "reservations"), orderBy("date"));
         const querySnapshot = await getDocs(q);
 
@@ -16,17 +16,22 @@ document.addEventListener("DOMContentLoaded", async function() {
             const { date, customer } = data;
             const groupKey = `${date}_${customer.club}`;
 
-            // 같은 날짜와 같은 동아리로 그룹화
+            // Group by same date and club name
             if (!reservations[groupKey]) {
                 reservations[groupKey] = { date, customer, details: [] };
             }
             reservations[groupKey].details.push(data);
         });
 
-        // 각 그룹별로 카드 생성
+        // Generate reservation cards for each group
         for (const key in reservations) {
             const { date, customer, details } = reservations[key];
-            const maskedName = customer.student.replace(/(.).+$/, "$1*");
+            
+            // Separate 학번 and 이름, then mask the name
+            const [, studentName] = customer.student.split(" - ");
+            const maskedName = studentName.length === 2 
+                ? studentName[0] + "*" 
+                : studentName[0] + "*".repeat(studentName.length - 2) + studentName.slice(-1);
 
             const card = document.createElement("div");
             card.classList.add("reservation-card");
