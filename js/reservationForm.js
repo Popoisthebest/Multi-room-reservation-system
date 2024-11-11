@@ -1,3 +1,6 @@
+import { db } from './firebaseConfig.js';
+import { doc, setDoc } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
+
 // 선택한 상품 정보를 불러와서 화면에 표시
 document.addEventListener("DOMContentLoaded", function() {
     const productInfoContainer = document.getElementById("product-info");
@@ -19,14 +22,42 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 });
 
+// Firebase에 직접 예약 정보를 저장하는 함수
+async function saveToFirebase(rooms, date, club, student, contact, email, purpose) {
+    try {
+        for (const room in rooms) {
+            for (const time of rooms[room]) {
+                const reservationId = `${date}_${time}_${room}`;
+                const reservationRef = doc(db, "reservations", reservationId);
+                const reservationData = {
+                    date,
+                    time,
+                    room,
+                    status: true,
+                    customer: {
+                        club,
+                        student,
+                        contact,
+                        email,
+                        purpose
+                    }
+                };
+                await setDoc(reservationRef, reservationData);
+                console.log(`Firebase에 예약 완료: ${reservationId}`);
+            }
+        }
+        alert("예약이 완료되었습니다!");
+        localStorage.removeItem("reservationSelection"); // 선택 정보 삭제
+        window.location.href = './index.html'; // 예약 완료 후 메인 페이지로 이동
+    } catch (error) {
+        console.error("Firebase 저장 오류:", error);
+        alert("예약 저장 중 오류가 발생했습니다. 다시 시도해 주세요.");
+    }
+}
+
 // 예약 정보 저장 및 서버로 전송
 document.getElementById("reservation-form").addEventListener("submit", async function(event) {
     event.preventDefault();
-
-    const reservationButton = document.querySelector("button[type='submit']");
-    reservationButton.disabled = true;
-    reservationButton.textContent = "예약 중...";
-
     const club = document.getElementById("club").value;
     const studentId = document.getElementById("student-id").value;
     const studentName = document.getElementById("student-name").value;
@@ -36,44 +67,34 @@ document.getElementById("reservation-form").addEventListener("submit", async fun
     const purpose = document.getElementById("purpose").value;
 
     const selectionData = JSON.parse(localStorage.getItem("reservationSelection"));
+    if (!selectionData) {
+        alert("예약할 장소와 시간을 먼저 선택하세요.");
+        return;
+    }
+
     const { rooms, date } = selectionData;
 
-    const reservationData = { rooms, date, club, student, contact, email, purpose };
-
     try {
+        // 서버로 예약 요청
         const response = await fetch('http://localhost:3000/reserve', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(reservationData)
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ rooms, date, club, student, contact, email, purpose })
         });
 
-        if (!response.ok) throw new Error("서버 오류");
-
-        alert("예약이 완료되었습니다! 이메일을 확인하세요.");
+        if (response.ok) {
+            alert("예약이 완료되었습니다! 이메일을 확인하세요.");
+            localStorage.removeItem("reservationSelection"); // 선택 정보 삭제
+            window.location.href = './index.html'; // 예약 완료 후 메인 페이지로 이동
+        } else {
+            throw new Error("서버 오류");
+        }
     } catch (error) {
         console.error("서버 요청 오류:", error);
-        alert("서버에 문제가 있어 Firebase에 직접 예약합니다.");
-
-        // Firebase에 직접 예약 저장
-        await saveToFirebaseDirectly(reservationData);
-    } finally {
-        reservationButton.disabled = false;
-        reservationButton.textContent = "예약하기";
-        localStorage.removeItem("reservationSelection");
-        window.location.href = './index.html';
+        // 서버 오류 발생 시 Firebase에 직접 저장
+        alert("서버 연결에 문제가 있어 Firebase에 직접 저장합니다.");
+        await saveToFirebase(rooms, date, club, student, contact, email, purpose);
     }
 });
-
-async function saveToFirebaseDirectly({ rooms, date, club, student, contact, email, purpose }) {
-    const db = firebase.firestore();
-    for (const room in rooms) {
-        for (const time of rooms[room]) {
-            const reservationId = `${date}_${time}_${room}`;
-            const reservationRef = db.collection('reservations').doc(reservationId);
-            await reservationRef.set({
-                date, time, room, status: true, customer: { club, student, contact, email, purpose }
-            });
-        }
-    }
-}
-
