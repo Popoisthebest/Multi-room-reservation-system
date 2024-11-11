@@ -41,48 +41,32 @@ const transporter = nodemailer.createTransport({
 // 예약 저장 및 이메일 전송 엔드포인트
 app.post('/reserve', async (req, res) => {
     const { rooms, date, club, student, contact, email, purpose } = req.body;
-
-    console.log('수신자 이메일:', email);
-
     try {
-        let allTimes = []; // 모든 시간을 수집할 배열
-
+        let allTimes = [];
         for (const room in rooms) {
             for (const time of rooms[room]) {
                 const reservationId = `${date}_${time}_${room}`;
                 const reservationRef = db.collection('reservations').doc(reservationId);
-                const reservationData = {
-                    date,
-                    time,
-                    room,
-                    status: true,
-                    customer: {
-                        club,
-                        student,
-                        contact,
-                        email,
-                        purpose
-                    }
-                };
+                const reservationData = { date, time, room, status: true, customer: { club, student, contact, email, purpose } };
                 await reservationRef.set(reservationData);
-                allTimes.push(`${room} - ${time}`); // 모든 예약 시간과 방 정보를 수집
+                allTimes.push(`${room} - ${time}`);
             }
         }
 
-        const mailOptions = {
+        await transporter.sendMail({
             from: process.env.EMAIL_USER,
             to: email,
             subject: '예약 확인서',
-            text: `안녕하세요 ${student}님,\n\n예약이 성공적으로 완료되었습니다.\n\n예약 정보:\n- 날짜: ${date}\n- 예약된 시간 및 방: ${allTimes.join(', ')}\n- 동아리/단체: ${club}\n- 사용 목적: ${purpose}\n\n감사합니다.`
-        };
+            text: `안녕하세요 ${student}님, 예약이 성공적으로 완료되었습니다.\n예약 정보:\n- 날짜: ${date}\n- 예약 시간 및 방: ${allTimes.join(', ')}\n- 동아리/단체: ${club}\n- 사용 목적: ${purpose}`
+        });
 
-        await transporter.sendMail(mailOptions);
         res.status(200).send('예약이 완료되었습니다.');
     } catch (error) {
         console.error('예약 저장 오류:', error);
-        res.status(500).send('예약 중 오류가 발생했습니다.');
+        res.status(500).send('서버 오류로 인해 예약 이메일을 전송할 수 없습니다.');
     }
 });
+
 
 
 app.listen(3000, () => {
