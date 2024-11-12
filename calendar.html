@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>예약 캘린더</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <h1>멀티실 예약 캘린더</h1>
+    <button id="view-status-button" class="status-button">예약 현황 확인하기</button>
+    <div id="calendar-container">
+        <!-- JavaScript로 달력을 생성하여 각 날짜에 CIP 시간대를 표시할 예정 -->
+    </div>
+
+    <!-- Firebase 및 JS 파일 불러오기 -->
+    <script type="module" src="./js/firebaseConfig.js"></script>
+    <script type="module" src="./js/calendar.js"></script>
+    <script>
+        document.getElementById("view-status-button").onclick = function() {
+            window.location.href = "reservationStatus.html";
+        };
+    </script>
+</body>
+</html>
