@@ -139,3 +139,130 @@
   background-color: #6c757d;
   color: white;
 }
+
+.message {
+  margin-top: 1rem;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  text-align: center;
+  font-weight: 500;
+}
+
+#teacherOnlyMessage {
+  background-color: #fff3cd;
+  color: #856404;
+  border: 1px solid #ffeeba;
+}
+
+#disabledMessage {
+  background-color: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
+}
+
+/* 호실 선택 UI 스타일 */
+.building {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  margin-top: 20px;
+}
+
+.floor {
+  display: flex;
+  gap: 20px;
+  align-items: flex-start;
+}
+
+.floor-label {
+  width: 60px;
+  padding: 10px;
+  background-color: #f8f9fa;
+  border-radius: 4px;
+  text-align: center;
+  font-weight: bold;
+}
+
+.floor-content {
+  flex: 1;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 15px;
+}
+
+.reservation-room-item {
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 15px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.reservation-room-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.reservation-room-item h4 {
+  margin: 0 0 10px 0;
+  color: #333;
+}
+
+.reservation-room-status {
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.reservation-room-status.available {
+  background-color: #d4edda;
+  color: #155724;
+}
+
+.reservation-room-status.teacher-only {
+  background-color: #fff3cd;
+  color: #856404;
+}
+
+.reservation-room-status.unavailable {
+  background-color: #f8d7da;
+  color: #721c24;
+}
+
+.reservation-room-item.selected {
+  border-color: #2196f3;
+  background-color: #e3f2fd;
+}
+
+/* 예약 현황 헤더 */
+.reservation-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.refresh-button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background-color: #4a90e2;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.2s;
+}
+
+.refresh-button:hover {
+  background-color: #357abd;
+}
+
+.refresh-icon {
+  font-size: 16px;
+}

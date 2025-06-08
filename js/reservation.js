@@ -29,11 +29,12 @@ let currentStep = 1;
 
 // 페이지 초기화
 document.addEventListener("DOMContentLoaded", () => {
-  initFloorSelection();
+  initRoomSelection();
   initDateSelection();
   initTimeSelection();
   initReservationConfirmation();
   initNavigation();
+  updateStepDisplay();
 });
 
 // 네비게이션 초기화
@@ -49,7 +50,7 @@ function initNavigation() {
   });
 
   nextStepBtn.addEventListener("click", () => {
-    if (currentStep < 3) {
+    if (currentStep < 3 && canProceedToNextStep()) {
       currentStep++;
       updateStepDisplay();
     }
@@ -58,7 +59,6 @@ function initNavigation() {
 
 // 단계 표시 업데이트
 function updateStepDisplay() {
-  // 단계 표시 업데이트
   document.querySelectorAll(".step").forEach((step, index) => {
     if (index + 1 === currentStep) {
       step.classList.add("active");
@@ -67,7 +67,6 @@ function updateStepDisplay() {
     }
   });
 
-  // 섹션 표시 업데이트
   document.getElementById("roomSection").style.display =
     currentStep === 1 ? "block" : "none";
   document.getElementById("dateSection").style.display =
@@ -77,10 +76,8 @@ function updateStepDisplay() {
   document.querySelector(".reservation-summary").style.display =
     currentStep === 3 ? "block" : "none";
 
-  // 네비게이션 버튼 업데이트
   const prevStepBtn = document.getElementById("prevStep");
   const nextStepBtn = document.getElementById("nextStep");
-
   prevStepBtn.style.display = currentStep > 1 ? "block" : "none";
   nextStepBtn.disabled = !canProceedToNextStep();
 }
@@ -100,17 +97,22 @@ function canProceedToNextStep() {
 }
 
 // 호실 선택 초기화
-function initFloorSelection() {
-  const roomItems = document.querySelectorAll(".room-item");
+function initRoomSelection() {
+  const roomItems = document.querySelectorAll(".reservation-room-item");
   const teacherOnlyMessage = document.getElementById("teacherOnlyMessage");
   const disabledMessage = document.getElementById("disabledMessage");
   const nextStepBtn = document.getElementById("nextStep");
+
+  // 메시지 요소가 없는 경우를 대비한 안전장치
+  if (!teacherOnlyMessage || !disabledMessage) {
+    console.warn("메시지 요소를 찾을 수 없습니다.");
+    return;
+  }
 
   roomItems.forEach((item) => {
     item.addEventListener("click", () => {
       const roomId = item.dataset.roomId;
       const room = findRoomById(roomId);
-
       if (!room) return;
 
       // 이전 선택 제거
@@ -138,11 +140,9 @@ function initFloorSelection() {
       item.classList.add("selected");
       teacherOnlyMessage.style.display = "none";
       disabledMessage.style.display = "none";
-
       selectedRoom = room;
-      updateReservationSummary();
       nextStepBtn.disabled = false;
-      updateStepDisplay();
+      updateReservationSummary();
     });
   });
 }
@@ -169,7 +169,6 @@ function initDateSelection() {
     currentWeekSpan.textContent = `${formatDate(dates[0])} ~ ${formatDate(
       dates[3]
     )}`;
-
     dateGrid.innerHTML = dates
       .map(
         (date) => `
@@ -179,8 +178,6 @@ function initDateSelection() {
     `
       )
       .join("");
-
-    // 날짜 선택 이벤트 리스너
     const dateItems = document.querySelectorAll(".date-item");
     dateItems.forEach((item) => {
       item.addEventListener("click", () => {
@@ -192,25 +189,20 @@ function initDateSelection() {
       });
     });
   }
-
   prevWeekBtn.addEventListener("click", () => {
     currentWeekOffset--;
     renderDates();
   });
-
   nextWeekBtn.addEventListener("click", () => {
     currentWeekOffset++;
     renderDates();
   });
-
-  // 초기 날짜 렌더링
   renderDates();
 }
 
 // 시간 선택 초기화
 function initTimeSelection() {
   const timeSlots = document.querySelectorAll(".time-slot");
-
   timeSlots.forEach((slot) => {
     slot.addEventListener("click", () => {
       timeSlots.forEach((s) => s.classList.remove("selected"));
@@ -225,18 +217,14 @@ function initTimeSelection() {
 // 예약 확인 초기화
 function initReservationConfirmation() {
   const confirmButton = document.getElementById("confirmReservation");
-
   confirmButton.addEventListener("click", async () => {
     if (!selectedRoom || !selectedDate || !selectedTime) return;
 
     try {
       const db = firebase.firestore();
-      const user = firebase.auth().currentUser;
 
-      if (!user) {
-        alert("로그인이 필요합니다.");
-        return;
-      }
+      // 현재 시간을 ISO 문자열로 저장
+      const now = new Date().toISOString();
 
       // 예약 데이터 생성
       const reservationData = {
@@ -244,16 +232,31 @@ function initReservationConfirmation() {
         roomName: selectedRoom.name,
         date: selectedDate,
         timeSlot: selectedTime,
-        userId: user.uid,
-        userName: user.displayName || user.email,
-        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
         status: "pending",
+        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+        updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+        // 예약 정보를 쉽게 조회할 수 있도록 복합 필드 추가
+        searchDate: selectedDate, // 날짜 검색용
+        searchTime: selectedTime, // 시간 검색용
+        searchRoom: selectedRoom.id, // 호실 검색용
+        // 예약 상태 변경 이력
+        statusHistory: [
+          {
+            status: "pending",
+            timestamp: now,
+            note: "예약 신청",
+          },
+        ],
       };
 
       // 예약 저장
-      await db.collection("reservations").add(reservationData);
+      const reservationRef = await db
+        .collection("reservations")
+        .add(reservationData);
+
+      // 예약 ID를 URL 파라미터로 전달
       alert("예약이 완료되었습니다.");
-      window.location.href = "reservationStatus.html";
+      window.location.href = `reservationStatus.html?reservationId=${reservationRef.id}`;
     } catch (error) {
       console.error("예약 중 오류 발생:", error);
       alert("예약 중 오류가 발생했습니다. 다시 시도해주세요.");
@@ -267,14 +270,11 @@ function updateReservationSummary() {
   const dateSpan = document.getElementById("selectedDate");
   const timeSpan = document.getElementById("selectedTime");
   const confirmButton = document.getElementById("confirmReservation");
-
   roomSpan.textContent = selectedRoom ? selectedRoom.name : "-";
   dateSpan.textContent = selectedDate
     ? formatDate(new Date(selectedDate))
     : "-";
   timeSpan.textContent = selectedTime ? getTimeSlotName(selectedTime) : "-";
-
-  // 모든 항목이 선택되었을 때만 예약 버튼 활성화
   confirmButton.disabled = !(selectedRoom && selectedDate && selectedTime);
 }
 
@@ -283,17 +283,14 @@ function getWeekDates(offset = 0) {
   const today = new Date();
   const currentDay = today.getDay();
   const diff = currentDay === 0 ? -6 : 1 - currentDay;
-
   const monday = new Date(today);
   monday.setDate(today.getDate() + diff + offset * 7);
-
   const dates = [];
   for (let i = 0; i < 4; i++) {
     const date = new Date(monday);
     date.setDate(monday.getDate() + i);
     dates.push(date);
   }
-
   return dates;
 }
 

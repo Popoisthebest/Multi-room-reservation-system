@@ -6,219 +6,85 @@
     <title>예약 현황 - DAESHILL</title>
     <link rel="stylesheet" href="styles.css" />
     <link rel="stylesheet" href="css/reservation.css" />
-    <!-- Firebase SDK 추가 -->
+    <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
   </head>
   <body>
-    <div class="container">
-      <h1>예약 현황</h1>
-
-      <div class="reservation-filters">
-        <div class="filter-group">
-          <label for="date-filter">날짜</label>
-          <input type="date" id="date-filter" class="filter-input" />
+    <header class="site-header">
+      <div class="header-container">
+        <div class="logo">
+          <a href="index.html">DAESHILL</a>
         </div>
-        <div class="filter-group">
-          <label for="room-filter">멀티실</label>
-          <select id="room-filter" class="filter-input">
-            <option value="">전체</option>
-            <option value="room1">멀티실 1</option>
-            <option value="room2">멀티실 2</option>
-            <option value="room3">멀티실 3</option>
-          </select>
-        </div>
-      </div>
-
-      <div class="reservation-stats">
-        <div class="stat-card">
-          <h3>오늘의 예약</h3>
-          <p class="stat-number" id="today-count">0</p>
-        </div>
-        <div class="stat-card">
-          <h3>이번 주 예약</h3>
-          <p class="stat-number" id="week-count">0</p>
-        </div>
-        <div class="stat-card">
-          <h3>전체 예약</h3>
-          <p class="stat-number" id="total-count">0</p>
+        <nav class="main-nav">
+          <a href="index.html">홈</a>
+          <a href="reservation.html">예약하기</a>
+          <a href="reservationStatus.html" class="active">예약 현황</a>
+          <a href="mypage.html">마이페이지</a>
+        </nav>
+        <div class="auth-buttons">
+          <button id="loginButton" class="auth-button">로그인</button>
+          <button id="signupButton" class="auth-button">회원가입</button>
+          <button id="logoutButton" class="auth-button" style="display: none">
+            로그아웃
+          </button>
         </div>
       </div>
+    </header>
 
-      <div class="reservation-list" id="reservation-list">
-        <!-- 예약 목록이 여기에 동적으로 추가됩니다 -->
+    <main class="main-content">
+      <div class="reservation-container">
+        <div class="reservation-header">
+          <h2 class="reservation-title">예약 현황</h2>
+          <button id="refreshButton" class="refresh-button">
+            <span class="refresh-icon">↻</span> 새로고침
+          </button>
+        </div>
+
+        <div class="reservation-status">
+          <table class="status-table" id="statusTable">
+            <thead>
+              <tr>
+                <th>호실</th>
+                <th>날짜</th>
+                <th>시간</th>
+                <th>상태</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- 예약 목록이 여기에 동적으로 추가됩니다 -->
+            </tbody>
+          </table>
+        </div>
       </div>
+    </main>
 
-      <div class="empty-state" id="empty-state" style="display: none">
-        <div class="empty-icon">📅</div>
-        <h2>예약이 없습니다</h2>
-        <p>선택한 조건에 맞는 예약이 없습니다.</p>
-        <button
-          class="primary-button"
-          onclick="window.location.href='multiRoomCalendar.html'"
-        >
-          새 예약하기
-        </button>
+    <footer class="site-footer">
+      <div class="footer-container">
+        <div class="footer-section">
+          <h3>DAESHILL</h3>
+          <p>동아리 활동을 위한 공간 예약 서비스</p>
+        </div>
+        <div class="footer-section">
+          <h3>제작자</h3>
+          <p><a href="https://github.com/Popoisthebest">#Popoisthebest</a></p>
+          <p><a href="https://github.com/CloudR1ng">#CloudR1ng</a></p>
+          <p><a href="https://github.com/UntameDuck">#UntameDuck</a></p>
+        </div>
+        <div class="footer-section">
+          <h3>예약 시간</h3>
+          <p>예약 간격은 한 주 단위이며,</p>
+          <p>취소는 당일 오전 8시까지 가능합니다.</p>
+        </div>
       </div>
-
-      <div class="loading-spinner" id="loading-spinner" style="display: none">
-        <div class="spinner"></div>
-        <p>예약 정보를 불러오는 중...</p>
+      <div class="footer-bottom">
+        <p>&copy; 2025 A.C.T.(KE) All rights reserved.</p>
       </div>
-    </div>
+    </footer>
 
-    <script>
-      // Firebase 설정
-      const firebaseConfig = {
-        apiKey: "AIzaSyAen8SrBB-4446BNQP6onn4Xv__aLQDVVU",
-        authDomain: "multi-room-reservation-system.firebaseapp.com",
-        projectId: "multi-room-reservation-system",
-        storageBucket: "multi-room-reservation-system.appspot.com",
-        messagingSenderId: "498301757165",
-        appId: "1:498301757165:web:56230ab27bceee46a1cee4",
-      };
-
-      // Firebase 초기화
-      if (!firebase.apps.length) {
-        firebase.initializeApp(firebaseConfig);
-      }
-
-      // 예약 목록 가져오기
-      async function loadReservations() {
-        const loadingSpinner = document.getElementById("loading-spinner");
-        const emptyState = document.getElementById("empty-state");
-        const reservationList = document.getElementById("reservation-list");
-
-        loadingSpinner.style.display = "flex";
-        reservationList.innerHTML = "";
-        emptyState.style.display = "none";
-
-        try {
-          const db = firebase.firestore();
-          const reservationsRef = db.collection("reservations");
-          const snapshot = await reservationsRef.get();
-
-          if (snapshot.empty) {
-            emptyState.style.display = "flex";
-            return;
-          }
-
-          const reservations = [];
-          snapshot.forEach((doc) => {
-            reservations.push({ id: doc.id, ...doc.data() });
-          });
-
-          // 날짜순으로 정렬
-          reservations.sort((a, b) => new Date(a.date) - new Date(b.date));
-
-          // 통계 업데이트
-          updateStats(reservations);
-
-          // 예약 목록 렌더링
-          renderReservations(reservations);
-        } catch (error) {
-          console.error("예약 목록 로딩 오류:", error);
-          showError("예약 정보를 불러오는 중 오류가 발생했습니다.");
-        } finally {
-          loadingSpinner.style.display = "none";
-        }
-      }
-
-      // 통계 업데이트
-      function updateStats(reservations) {
-        const today = new Date().toISOString().split("T")[0];
-        const weekStart = new Date();
-        weekStart.setDate(weekStart.getDate() - weekStart.getDay());
-        const weekStartStr = weekStart.toISOString().split("T")[0];
-
-        const todayCount = reservations.filter((r) => r.date === today).length;
-        const weekCount = reservations.filter(
-          (r) => r.date >= weekStartStr
-        ).length;
-        const totalCount = reservations.length;
-
-        document.getElementById("today-count").textContent = todayCount;
-        document.getElementById("week-count").textContent = weekCount;
-        document.getElementById("total-count").textContent = totalCount;
-      }
-
-      // 예약 목록 렌더링
-      function renderReservations(reservations) {
-        const reservationList = document.getElementById("reservation-list");
-        const dateFilter = document.getElementById("date-filter").value;
-        const roomFilter = document.getElementById("room-filter").value;
-
-        const filteredReservations = reservations.filter((reservation) => {
-          if (dateFilter && reservation.date !== dateFilter) return false;
-          if (roomFilter && reservation.room !== roomFilter) return false;
-          return true;
-        });
-
-        if (filteredReservations.length === 0) {
-          document.getElementById("empty-state").style.display = "flex";
-          return;
-        }
-
-        filteredReservations.forEach((reservation) => {
-          const card = createReservationCard(reservation);
-          reservationList.appendChild(card);
-        });
-      }
-
-      // 예약 카드 생성
-      function createReservationCard(reservation) {
-        const card = document.createElement("div");
-        card.className = "reservation-card";
-
-        card.innerHTML = `
-                <div class="reservation-header">
-                    <h3>${reservation.room}</h3>
-                </div>
-                <div class="reservation-info">
-                    <p><strong>날짜:</strong> ${formatDate(
-                      reservation.date
-                    )}</p>
-                    <p><strong>시간:</strong> ${reservation.time}</p>
-                    <p><strong>동아리:</strong> ${reservation.customer.club}</p>
-                    <p><strong>예약자:</strong> ${
-                      reservation.customer.student
-                    }</p>
-                    <p><strong>연락처:</strong> ${
-                      reservation.customer.contact
-                    }</p>
-                    <p><strong>이메일:</strong> ${
-                      reservation.customer.email
-                    }</p>
-                    <p><strong>사용 목적:</strong> ${
-                      reservation.customer.purpose
-                    }</p>
-                </div>
-            `;
-
-        return card;
-      }
-
-      // 날짜 포맷팅
-      function formatDate(dateStr) {
-        const date = new Date(dateStr);
-        return date.toLocaleDateString("ko-KR", {
-          year: "numeric",
-          month: "long",
-          day: "numeric",
-          weekday: "long",
-        });
-      }
-
-      // 필터 이벤트 리스너
-      document
-        .getElementById("date-filter")
-        .addEventListener("change", loadReservations);
-      document
-        .getElementById("room-filter")
-        .addEventListener("change", loadReservations);
-
-      // 초기 로딩
-      loadReservations();
-    </script>
+    <!-- JavaScript 파일 로드 -->
+    <script src="js/common.js"></script>
+    <script type="module" src="js/reservationStatus.js"></script>
   </body>
 </html>

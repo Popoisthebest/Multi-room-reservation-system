@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>예약하기 - DAESHILL</title>
-    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="css/styles.css" />
     <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
@@ -33,172 +33,419 @@
     </header>
 
     <main class="main-content">
-      <div class="reservation-container">
-        <h2 class="reservation-title">예약하기</h2>
-
-        <!-- 단계 표시 -->
-        <div class="reservation-steps">
-          <div class="step active" id="step1">
-            <span class="step-number">1</span>
-            <span class="step-text">호실 선택</span>
-          </div>
-          <div class="step" id="step2">
-            <span class="step-number">2</span>
-            <span class="step-text">날짜 선택</span>
-          </div>
-          <div class="step" id="step3">
-            <span class="step-number">3</span>
-            <span class="step-text">시간 선택</span>
-          </div>
-        </div>
-
-        <!-- 호실 선택 섹션 -->
-        <div class="reservation-section" id="roomSection">
-          <h3>호실 선택</h3>
-          <div class="building">
-            <div class="floor">
-              <div class="floor-label">4층</div>
-              <div class="floor-content">
-                <div class="reservation-room-item" data-room-id="media">
-                  <h4>미디어실 (시청각실)</h4>
-                  <span class="reservation-room-status teacher-only"
-                    >교사만 신청 가능</span
-                  >
-                </div>
-                <div class="reservation-room-item" data-room-id="global">
-                  <h4>글로벌 라운지</h4>
-                  <span class="reservation-room-status teacher-only"
-                    >교사만 신청 가능</span
-                  >
-                </div>
+      <section class="reservation-section">
+        <h2>예약하기</h2>
+        <div class="building">
+          <h3>LEFT WING</h3>
+          <div class="floor">
+            <div class="floor-label">1층</div>
+            <div class="floor-content">
+              <div class="room-item">
+                <h4>제1 자주실</h4>
+                <span class="room-status available">자주실</span>
+                <button
+                  class="reserve-button"
+                  onclick="showReservationModal('LEFT WING', '제1 자주실')"
+                >
+                  예약하기
+                </button>
               </div>
-            </div>
-
-            <div class="floor">
-              <div class="floor-label">3층</div>
-              <div class="floor-content">
-                <div class="reservation-room-item" data-room-id="ai">
-                  <h4>AI실</h4>
-                  <span class="reservation-room-status unavailable"
-                    >신청 불가</span
-                  >
-                </div>
-                <div class="reservation-room-item" data-room-id="computer">
-                  <h4>컴퓨터실</h4>
-                  <span class="reservation-room-status unavailable"
-                    >신청 불가</span
-                  >
-                </div>
+              <div class="room-item">
+                <h4>제2 자주실</h4>
+                <span class="room-status available">자주실</span>
+                <button
+                  class="reserve-button"
+                  onclick="showReservationModal('LEFT WING', '제2 자주실')"
+                >
+                  예약하기
+                </button>
               </div>
-            </div>
-
-            <div class="floor">
-              <div class="floor-label">2층</div>
-              <div class="floor-content">
-                <div class="reservation-room-item" data-room-id="lab">
-                  <h4>실험실</h4>
-                  <span class="reservation-room-status teacher-only"
-                    >교사만 신청 가능</span
-                  >
-                </div>
-                <div class="reservation-room-item" data-room-id="fusion1">
-                  <h4>제1 융합실</h4>
-                  <span class="reservation-room-status available"
-                    >예약 가능</span
-                  >
-                </div>
-                <div class="reservation-room-item" data-room-id="fusion2">
-                  <h4>제2 융합실</h4>
-                  <span class="reservation-room-status available"
-                    >예약 가능</span
-                  >
-                </div>
-              </div>
-            </div>
-
-            <div class="floor">
-              <div class="floor-label">1층</div>
-              <div class="floor-content">
-                <div class="reservation-room-item" data-room-id="maker1">
-                  <h4>제1 메이커실</h4>
-                  <span class="reservation-room-status available"
-                    >예약 가능</span
-                  >
-                </div>
-                <div class="reservation-room-item" data-room-id="maker2">
-                  <h4>제2 메이커실</h4>
-                  <span class="reservation-room-status available"
-                    >예약 가능</span
-                  >
-                </div>
-                <div class="reservation-room-item" data-room-id="woodwork">
-                  <h4>목공실</h4>
-                  <span class="reservation-room-status teacher-only"
-                    >교사만 신청 가능</span
-                  >
-                </div>
-                <div class="reservation-room-item" data-room-id="laser">
-                  <h4>레이저실</h4>
-                  <span class="reservation-room-status teacher-only"
-                    >교사만 신청 가능</span
-                  >
-                </div>
+              <div class="room-item">
+                <h4>제3 자주실</h4>
+                <span class="room-status available">자주실</span>
+                <button
+                  class="reserve-button"
+                  onclick="showReservationModal('LEFT WING', '제3 자주실')"
+                >
+                  예약하기
+                </button>
               </div>
             </div>
           </div>
-        </div>
-
-        <!-- 날짜 선택 섹션 -->
-        <div class="reservation-section" id="dateSection" style="display: none">
-          <h3>날짜 선택</h3>
-          <div class="week-navigation">
-            <button id="prevWeek">이전 주</button>
-            <span id="currentWeek"></span>
-            <button id="nextWeek">다음 주</button>
-          </div>
-          <div class="week-days">
-            <div class="weekday">월</div>
-            <div class="weekday">화</div>
-            <div class="weekday">수</div>
-            <div class="weekday">목</div>
-          </div>
-          <div id="dateGrid" class="date-grid">
-            <!-- 날짜는 JavaScript로 동적 생성됩니다 -->
-          </div>
-        </div>
-
-        <!-- 시간 선택 섹션 -->
-        <div class="reservation-section" id="timeSection" style="display: none">
-          <h3>시간 선택</h3>
-          <div class="time-slots">
-            <div class="time-slot" data-time="lunch">
-              점심시간 (12:00-13:00)
+          <div class="floor">
+            <div class="floor-label">2층</div>
+            <div class="floor-content">
+              <div class="room-item">
+                <h4>제1 자주실</h4>
+                <span class="room-status available">자주실</span>
+                <button
+                  class="reserve-button"
+                  onclick="showReservationModal('LEFT WING', '제1 자주실')"
+                >
+                  예약하기
+                </button>
+              </div>
+              <div class="room-item">
+                <h4>제2 자주실</h4>
+                <span class="room-status available">자주실</span>
+                <button
+                  class="reserve-button"
+                  onclick="showReservationModal('LEFT WING', '제2 자주실')"
+                >
+                  예약하기
+                </button>
+              </div>
+              <div class="room-item">
+                <h4>제3 자주실</h4>
+                <span class="room-status available">자주실</span>
+                <button
+                  class="reserve-button"
+                  onclick="showReservationModal('LEFT WING', '제3 자주실')"
+                >
+                  예약하기
+                </button>
+              </div>
             </div>
-            <div class="time-slot" data-time="cip1">CIP1 (13:00-14:00)</div>
-            <div class="time-slot" data-time="cip2">CIP2 (14:00-15:00)</div>
-            <div class="time-slot" data-time="cip3">CIP3 (15:00-16:00)</div>
+          </div>
+          <div class="floor">
+            <div class="floor-label">3층</div>
+            <div class="floor-content">
+              <div class="room-item">
+                <h4>제1 자주실</h4>
+                <span class="room-status available">자주실</span>
+                <button
+                  class="reserve-button"
+                  onclick="showReservationModal('LEFT WING', '제1 자주실')"
+                >
+                  예약하기
+                </button>
+              </div>
+              <div class="room-item">
+                <h4>제2 자주실</h4>
+                <span class="room-status available">자주실</span>
+                <button
+                  class="reserve-button"
+                  onclick="showReservationModal('LEFT WING', '제2 자주실')"
+                >
+                  예약하기
+                </button>
+              </div>
+              <div class="room-item">
+                <h4>제3 자주실</h4>
+                <span class="room-status available">자주실</span>
+                <button
+                  class="reserve-button"
+                  onclick="showReservationModal('LEFT WING', '제3 자주실')"
+                >
+                  예약하기
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="floor">
+            <div class="floor-label">4층</div>
+            <div class="floor-content">
+              <div class="room-item">
+                <h4>제1 자주실</h4>
+                <span class="room-status available">자주실</span>
+                <button
+                  class="reserve-button"
+                  onclick="showReservationModal('LEFT WING', '제1 자주실')"
+                >
+                  예약하기
+                </button>
+              </div>
+              <div class="room-item">
+                <h4>제2 자주실</h4>
+                <span class="room-status available">자주실</span>
+                <button
+                  class="reserve-button"
+                  onclick="showReservationModal('LEFT WING', '제2 자주실')"
+                >
+                  예약하기
+                </button>
+              </div>
+              <div class="room-item">
+                <h4>제3 자주실</h4>
+                <span class="room-status available">자주실</span>
+                <button
+                  class="reserve-button"
+                  onclick="showReservationModal('LEFT WING', '제3 자주실')"
+                >
+                  예약하기
+                </button>
+              </div>
+            </div>
           </div>
         </div>
 
-        <!-- 예약 확인 섹션 -->
-        <div class="reservation-summary" style="display: none">
-          <h3>예약 정보</h3>
-          <div class="summary-content">
-            <p>선택한 실: <span id="selectedRoom">-</span></p>
-            <p>선택한 날짜: <span id="selectedDate">-</span></p>
-            <p>선택한 시간: <span id="selectedTime">-</span></p>
+        <div class="building">
+          <h3>ORYANG HALL</h3>
+          <div class="floor">
+            <div class="floor-label">2층</div>
+            <div class="floor-content">
+              <div class="room-item">
+                <h4>AI 리딩실</h4>
+                <span class="room-status restricted">신청 불가</span>
+              </div>
+            </div>
           </div>
-          <button id="confirmReservation" class="confirm-btn" disabled>
-            예약하기
-          </button>
+          <div class="floor">
+            <div class="floor-label">3층</div>
+            <div class="floor-content">
+              <div class="room-item">
+                <h4>진로실</h4>
+                <span class="room-status restricted">신청 불가</span>
+              </div>
+            </div>
+          </div>
+          <div class="floor">
+            <div class="floor-label">멀티실</div>
+            <div class="floor-content">
+              <div class="room-item">
+                <h4>제1 멀티실</h4>
+                <span class="room-status multi">멀티실</span>
+                <button
+                  class="reserve-button"
+                  onclick="showReservationModal('ORYANG HALL', '제1 멀티실')"
+                >
+                  예약하기
+                </button>
+              </div>
+              <div class="room-item">
+                <h4>제2 멀티실</h4>
+                <span class="room-status multi">멀티실</span>
+                <button
+                  class="reserve-button"
+                  onclick="showReservationModal('ORYANG HALL', '제2 멀티실')"
+                >
+                  예약하기
+                </button>
+              </div>
+              <div class="room-item">
+                <h4>제3 멀티실</h4>
+                <span class="room-status multi">멀티실</span>
+                <button
+                  class="reserve-button"
+                  onclick="showReservationModal('ORYANG HALL', '제3 멀티실')"
+                >
+                  예약하기
+                </button>
+              </div>
+              <div class="room-item">
+                <h4>제4 멀티실</h4>
+                <span class="room-status multi">멀티실</span>
+                <button
+                  class="reserve-button"
+                  onclick="showReservationModal('ORYANG HALL', '제4 멀티실')"
+                >
+                  예약하기
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="floor">
+            <div class="floor-label">4층</div>
+            <div class="floor-content">
+              <div class="room-item">
+                <h4>진로진학상담실</h4>
+                <span class="room-status restricted">신청 불가</span>
+              </div>
+              <div class="room-item">
+                <h4>제4 자주실</h4>
+                <span class="room-status available">자주실</span>
+                <button
+                  class="reserve-button"
+                  onclick="showReservationModal('ORYANG HALL', '제4 자주실')"
+                >
+                  예약하기
+                </button>
+              </div>
+              <div class="room-item">
+                <h4>제5 자주실</h4>
+                <span class="room-status available">자주실</span>
+                <button
+                  class="reserve-button"
+                  onclick="showReservationModal('ORYANG HALL', '제5 자주실')"
+                >
+                  예약하기
+                </button>
+              </div>
+              <div class="room-item">
+                <h4>제6 자주실</h4>
+                <span class="room-status available">자주실</span>
+                <button
+                  class="reserve-button"
+                  onclick="showReservationModal('ORYANG HALL', '제6 자주실')"
+                >
+                  예약하기
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
 
-        <!-- 네비게이션 버튼 -->
-        <div class="reservation-navigation">
-          <button id="prevStep" class="nav-btn" style="display: none">
-            이전
-          </button>
-          <button id="nextStep" class="nav-btn" disabled>다음</button>
+        <div class="building">
+          <h3>RIGHT WING</h3>
+          <div class="floor">
+            <div class="floor-label">STUDY CAFE</div>
+            <div class="floor-content">
+              <div class="room-item">
+                <h4>제1 그룹실</h4>
+                <span class="room-status group">그룹실</span>
+                <button
+                  class="reserve-button"
+                  onclick="showReservationModal('RIGHT WING', '제1 그룹실')"
+                >
+                  예약하기
+                </button>
+              </div>
+              <div class="room-item">
+                <h4>제2 그룹실</h4>
+                <span class="room-status group">그룹실</span>
+                <button
+                  class="reserve-button"
+                  onclick="showReservationModal('RIGHT WING', '제2 그룹실')"
+                >
+                  예약하기
+                </button>
+              </div>
+              <div class="room-item">
+                <h4>제3 그룹실</h4>
+                <span class="room-status group">그룹실</span>
+                <button
+                  class="reserve-button"
+                  onclick="showReservationModal('RIGHT WING', '제3 그룹실')"
+                >
+                  예약하기
+                </button>
+              </div>
+              <div class="room-item">
+                <h4>개인석</h4>
+                <span class="room-status individual">개인석</span>
+                <button
+                  class="reserve-button"
+                  onclick="showReservationModal('RIGHT WING', '개인석')"
+                >
+                  예약하기
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="floor">
+            <div class="floor-label">3층 LOUNGE</div>
+            <div class="floor-content">
+              <div class="room-item">
+                <h4>제1 소그룹실</h4>
+                <span class="room-status small-group">소그룹실</span>
+                <button
+                  class="reserve-button"
+                  onclick="showReservationModal('RIGHT WING', '제1 소그룹실')"
+                >
+                  예약하기
+                </button>
+              </div>
+              <div class="room-item">
+                <h4>제2 소그룹실</h4>
+                <span class="room-status small-group">소그룹실</span>
+                <button
+                  class="reserve-button"
+                  onclick="showReservationModal('RIGHT WING', '제2 소그룹실')"
+                >
+                  예약하기
+                </button>
+              </div>
+              <div class="room-item">
+                <h4>제3 소그룹실</h4>
+                <span class="room-status small-group">소그룹실</span>
+                <button
+                  class="reserve-button"
+                  onclick="showReservationModal('RIGHT WING', '제3 소그룹실')"
+                >
+                  예약하기
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="floor">
+            <div class="floor-label">4층 LOUNGE</div>
+            <div class="floor-content">
+              <div class="room-item">
+                <h4>제1 소그룹실</h4>
+                <span class="room-status small-group">소그룹실</span>
+                <button
+                  class="reserve-button"
+                  onclick="showReservationModal('RIGHT WING', '제1 소그룹실')"
+                >
+                  예약하기
+                </button>
+              </div>
+              <div class="room-item">
+                <h4>제2 소그룹실</h4>
+                <span class="room-status small-group">소그룹실</span>
+                <button
+                  class="reserve-button"
+                  onclick="showReservationModal('RIGHT WING', '제2 소그룹실')"
+                >
+                  예약하기
+                </button>
+              </div>
+              <div class="room-item">
+                <h4>제3 소그룹실</h4>
+                <span class="room-status small-group">소그룹실</span>
+                <button
+                  class="reserve-button"
+                  onclick="showReservationModal('RIGHT WING', '제3 소그룹실')"
+                >
+                  예약하기
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 예약 모달 -->
+      <div id="reservationModal" class="modal">
+        <div class="modal-content">
+          <span class="close">&times;</span>
+          <h2>예약하기</h2>
+          <form id="reservationForm">
+            <div class="form-group">
+              <label for="building">건물</label>
+              <input type="text" id="building" readonly />
+            </div>
+            <div class="form-group">
+              <label for="room">실</label>
+              <input type="text" id="room" readonly />
+            </div>
+            <div class="form-group">
+              <label for="date">날짜</label>
+              <input type="date" id="date" required />
+            </div>
+            <div class="form-group">
+              <label for="time">시간</label>
+              <select id="time" required>
+                <option value="">시간 선택</option>
+                <option value="1">1교시</option>
+                <option value="2">2교시</option>
+                <option value="3">3교시</option>
+                <option value="4">4교시</option>
+                <option value="5">5교시</option>
+                <option value="6">6교시</option>
+                <option value="7">7교시</option>
+                <option value="8">8교시</option>
+                <option value="9">9교시</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="purpose">사용 목적</label>
+              <input type="text" id="purpose" required />
+            </div>
+            <button type="submit" class="button button-primary">
+              예약하기
+            </button>
+          </form>
         </div>
       </div>
     </main>
@@ -226,8 +473,123 @@
       </div>
     </footer>
 
-    <!-- JavaScript 파일 로드 -->
-    <script src="js/common.js"></script>
-    <script src="js/reservation.js"></script>
+    <script>
+      // Firebase 설정
+      const firebaseConfig = {
+        apiKey: "AIzaSyAen8SrBB-4446BNQP6onn4Xv__aLQDVVU",
+        authDomain: "multi-room-reservation-system.firebaseapp.com",
+        projectId: "multi-room-reservation-system",
+        storageBucket: "multi-room-reservation-system.appspot.com",
+        messagingSenderId: "498301757165",
+        appId: "1:498301757165:web:56230ab27bceee46a1cee4",
+      };
+
+      // Firebase 초기화
+      if (!firebase.apps.length) {
+        firebase.initializeApp(firebaseConfig);
+      }
+
+      // 로그인 상태 확인
+      firebase.auth().onAuthStateChanged((user) => {
+        const loginButton = document.getElementById("loginButton");
+        const signupButton = document.getElementById("signupButton");
+        const logoutButton = document.getElementById("logoutButton");
+
+        if (user) {
+          loginButton.style.display = "none";
+          signupButton.style.display = "none";
+          logoutButton.style.display = "block";
+        } else {
+          loginButton.style.display = "block";
+          signupButton.style.display = "block";
+          logoutButton.style.display = "none";
+        }
+      });
+
+      // 버튼 이벤트 리스너
+      document.getElementById("loginButton").addEventListener("click", () => {
+        window.location.href = "login.html";
+      });
+
+      document.getElementById("signupButton").addEventListener("click", () => {
+        window.location.href = "signup.html";
+      });
+
+      document
+        .getElementById("logoutButton")
+        .addEventListener("click", async () => {
+          try {
+            await firebase.auth().signOut();
+            window.location.href = "index.html";
+          } catch (error) {
+            console.error("로그아웃 중 오류:", error);
+          }
+        });
+
+      // 모달 관련 변수
+      const modal = document.getElementById("reservationModal");
+      const closeBtn = document.getElementsByClassName("close")[0];
+
+      // 모달 닫기
+      closeBtn.onclick = function () {
+        modal.style.display = "none";
+      };
+
+      window.onclick = function (event) {
+        if (event.target == modal) {
+          modal.style.display = "none";
+        }
+      };
+
+      // 예약 모달 표시
+      function showReservationModal(building, room) {
+        document.getElementById("building").value = building;
+        document.getElementById("room").value = room;
+        modal.style.display = "block";
+      }
+
+      // 예약 폼 제출
+      document
+        .getElementById("reservationForm")
+        .addEventListener("submit", async (e) => {
+          e.preventDefault();
+
+          const user = firebase.auth().currentUser;
+          if (!user) {
+            alert("로그인이 필요합니다.");
+            window.location.href = "login.html";
+            return;
+          }
+
+          const building = document.getElementById("building").value;
+          const room = document.getElementById("room").value;
+          const date = document.getElementById("date").value;
+          const time = document.getElementById("time").value;
+          const purpose = document.getElementById("purpose").value;
+
+          try {
+            const reservationRef = firebase
+              .firestore()
+              .collection("reservations");
+            await reservationRef.add({
+              userId: user.uid,
+              building,
+              room,
+              date,
+              time,
+              purpose,
+              status: "pending",
+              createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+            });
+
+            alert("예약이 완료되었습니다.");
+            modal.style.display = "none";
+            document.getElementById("reservationForm").reset();
+          } catch (error) {
+            console.error("예약 중 오류:", error);
+            alert("예약 중 오류가 발생했습니다.");
+          }
+        });
+    </script>
   </body>
 </html>
