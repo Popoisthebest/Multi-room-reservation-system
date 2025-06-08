@@ -75,10 +75,13 @@ body {
 
 .auth-button {
   padding: 0.5rem 1rem;
+  margin: 0;
   border: none;
   border-radius: 4px;
   cursor: pointer;
   font-weight: 500;
+  min-width: 100px;
+  min-height: 40px;
   transition: var(--transition);
 }
 
@@ -117,9 +120,9 @@ body {
 .footer-container {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 0 1rem;
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
   gap: 2rem;
 }
 
@@ -241,8 +244,13 @@ body {
   }
 
   .footer-container {
-    grid-template-columns: 1fr;
+    flex-direction: column;
     text-align: center;
+    gap: 1.5rem;
+  }
+
+  .footer-section {
+    width: 100%;
   }
 }
 
@@ -1427,9 +1435,8 @@ button:active {
 }
 
 .rooms-section {
-  padding: 4rem 0;
-  background: var(--background-light);
-  margin: 0 -1rem;
+  padding: 40px 20px;
+  background-color: #f8f9fa;
 }
 
 .rooms-section h2 {
@@ -1439,13 +1446,96 @@ button:active {
   color: var(--text-color);
 }
 
-.rooms-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 2rem;
-  padding: 0 1rem;
-  max-width: 1200px;
+.building {
+  max-width: 800px;
   margin: 0 auto;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+.floor {
+  display: flex;
+  border-bottom: 2px solid #e0e0e0;
+  background: #fff;
+}
+
+.floor:last-child {
+  border-bottom: none;
+}
+
+.floor-label {
+  width: 80px;
+  background: #2196f3;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  font-weight: bold;
+  padding: 20px 0;
+}
+
+.floor-content {
+  flex: 1;
+  padding: 20px;
+  background: #fff;
+}
+
+.room-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 0;
+  border-bottom: 1px solid #eee;
+}
+
+.room-item:last-child {
+  border-bottom: none;
+}
+
+.room-item h4 {
+  margin: 0;
+  font-size: 1.1rem;
+  color: #333;
+}
+
+.room-status {
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.room-status.available {
+  background-color: #e8f5e9;
+  color: #2e7d32;
+}
+
+.room-status.teacher-only {
+  background-color: #fff3e0;
+  color: #ef6c00;
+}
+
+.room-status.unavailable {
+  background-color: #f5f5f5;
+  color: #757575;
+}
+
+@media (max-width: 768px) {
+  .floor {
+    flex-direction: column;
+  }
+
+  .floor-label {
+    width: 100%;
+    padding: 10px 0;
+  }
+
+  .floor-content {
+    padding: 15px;
+  }
 }
 
 .room-card {
@@ -1559,9 +1649,9 @@ button:active {
 
 .calendar-grid {
   display: grid;
-  grid-template-columns: repeat(7, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   gap: 1rem;
-  margin-bottom: 2rem;
+  margin-bottom: 1rem;
 }
 
 .calendar-weekday {
@@ -1574,53 +1664,27 @@ button:active {
   box-shadow: var(--shadow);
 }
 
+.calendar-days {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
 .calendar-day {
-  aspect-ratio: 1;
-  padding: 1rem;
   background: white;
   border-radius: 8px;
   box-shadow: var(--shadow);
-  cursor: pointer;
-  transition: var(--transition);
-  position: relative;
+  padding: 1rem;
+  min-height: 200px;
 }
 
-.calendar-day:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-}
-
-.calendar-day.today {
-  background: var(--primary-color);
-  color: white;
-}
-
-.calendar-day.selected {
-  background: var(--secondary-color);
-  color: white;
-}
-
-.calendar-day.disabled {
-  background: #f5f5f5;
-  color: #999;
-  cursor: not-allowed;
-}
-
-.calendar-day.has-reservations::after {
-  content: "";
-  position: absolute;
-  bottom: 0.5rem;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 6px;
-  height: 6px;
-  background: var(--primary-color);
-  border-radius: 50%;
-}
-
-.calendar-day.today.has-reservations::after,
-.calendar-day.selected.has-reservations::after {
-  background: white;
+.calendar-day .date {
+  font-weight: 600;
+  color: var(--text-color);
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid #eee;
 }
 
 .time-slots-container {
@@ -1630,17 +1694,10 @@ button:active {
   box-shadow: var(--shadow);
 }
 
-.time-slots-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 1.5rem;
-}
-
 .time-slots-title {
   font-size: 1.2rem;
   color: var(--text-color);
-  margin: 0;
+  margin: 0 0 1.5rem;
 }
 
 .time-slots-grid {
@@ -1676,116 +1733,265 @@ button:active {
   border-color: #eee;
 }
 
-.room-selection {
-  margin-top: 2rem;
-  background: white;
-  padding: 1.5rem;
-  border-radius: 12px;
-  box-shadow: var(--shadow);
-}
-
-.room-selection h3 {
-  margin: 0 0 1rem;
-  color: var(--text-color);
-}
-
-.room-options {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-  gap: 1rem;
-}
-
-.room-option {
-  padding: 1rem;
-  border: 1px solid var(--border-color);
-  border-radius: 8px;
-  cursor: pointer;
-  transition: var(--transition);
-}
-
-.room-option:hover {
-  border-color: var(--primary-color);
-  background: rgba(74, 144, 226, 0.05);
-}
-
-.room-option.selected {
-  background: var(--primary-color);
-  color: white;
-  border-color: var(--primary-color);
-}
-
-.room-option.disabled {
-  background: #f5f5f5;
-  color: #999;
-  cursor: not-allowed;
-  border-color: #eee;
-}
-
-.reservation-summary {
-  margin-top: 2rem;
-  background: white;
-  padding: 1.5rem;
-  border-radius: 12px;
-  box-shadow: var(--shadow);
-}
-
-.reservation-summary h3 {
-  margin: 0 0 1rem;
-  color: var(--text-color);
-}
-
-.summary-details {
-  display: grid;
-  gap: 1rem;
-}
-
-.summary-item {
-  display: flex;
-  justify-content: space-between;
-  padding: 0.5rem 0;
-  border-bottom: 1px solid var(--border-color);
-}
-
-.summary-item:last-child {
-  border-bottom: none;
-}
-
-.summary-label {
-  color: var(--text-light);
-}
-
-.summary-value {
-  font-weight: 500;
-  color: var(--text-color);
-}
-
-/* 반응형 디자인 */
 @media (max-width: 768px) {
+  .calendar-grid,
+  .calendar-days {
+    grid-template-columns: 1fr;
+  }
+
   .calendar-header {
     flex-direction: column;
     gap: 1rem;
     text-align: center;
   }
 
-  .calendar-grid {
-    gap: 0.5rem;
-  }
-
-  .calendar-weekday {
-    padding: 0.5rem;
-    font-size: 0.9rem;
-  }
-
-  .calendar-day {
-    padding: 0.5rem;
-    font-size: 0.9rem;
-  }
-
   .time-slots-grid {
-    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-  }
-
-  .room-options {
     grid-template-columns: 1fr;
   }
+}
+
+/* 관리자 페이지 스타일 */
+.admin-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.admin-section {
+  background: white;
+  border-radius: 8px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.admin-section h2 {
+  color: #333;
+  margin-bottom: 1.5rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid #eee;
+}
+
+.reservation-item,
+.user-item {
+  background: #f8f9fa;
+  border-radius: 6px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.reservation-info,
+.user-info {
+  flex: 1;
+}
+
+.reservation-info p,
+.user-info p {
+  margin: 0.5rem 0;
+  color: #555;
+}
+
+.reservation-actions,
+.user-actions {
+  margin-left: 1rem;
+}
+
+.button-danger {
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.button-danger:hover {
+  background-color: #c82333;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+  .reservation-item,
+  .user-item {
+    flex-direction: column;
+  }
+
+  .reservation-actions,
+  .user-actions {
+    margin-left: 0;
+    margin-top: 1rem;
+  }
+}
+
+/* 예약 단계 스타일 */
+.reservation-steps {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 2rem;
+  padding: 0 1rem;
+}
+
+.step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  flex: 1;
+}
+
+.step:not(:last-child)::after {
+  content: "";
+  position: absolute;
+  top: 20px;
+  right: -50%;
+  width: 100%;
+  height: 2px;
+  background: #ddd;
+  z-index: 1;
+}
+
+.step.active:not(:last-child)::after {
+  background: #007bff;
+}
+
+.step-number {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #fff;
+  border: 2px solid #ddd;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+  position: relative;
+  z-index: 2;
+}
+
+.step.active .step-number {
+  background: #007bff;
+  border-color: #007bff;
+  color: #fff;
+}
+
+.step-text {
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.step.active .step-text {
+  color: #007bff;
+  font-weight: bold;
+}
+
+/* 예약 섹션 스타일 */
+.reservation-section {
+  background: #fff;
+  border-radius: 8px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* 네비게이션 버튼 스타일 */
+.reservation-navigation {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 2rem;
+}
+
+.nav-btn {
+  padding: 0.8rem 2rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: all 0.3s ease;
+}
+
+.nav-btn:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}
+
+#prevStep {
+  background: #6c757d;
+  color: #fff;
+}
+
+#prevStep:hover:not(:disabled) {
+  background: #5a6268;
+}
+
+#nextStep {
+  background: #007bff;
+  color: #fff;
+}
+
+#nextStep:hover:not(:disabled) {
+  background: #0056b3;
+}
+
+/* 예약 페이지 전용 호실 선택 스타일 */
+.reservation-room-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  border: 1px solid #eee;
+  border-radius: 8px;
+  margin-bottom: 0.5rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  background: #fff;
+}
+
+.reservation-room-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border-color: #4a90e2;
+}
+
+.reservation-room-item.selected {
+  background: #e3f2fd;
+  border-color: #4a90e2;
+  box-shadow: 0 2px 8px rgba(74, 144, 226, 0.2);
+}
+
+.reservation-room-item h4 {
+  margin: 0;
+  font-size: 1.1rem;
+  color: #333;
+}
+
+.reservation-room-status {
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.reservation-room-status.available {
+  background: #e8f5e9;
+  color: #2e7d32;
+}
+
+.reservation-room-status.teacher-only {
+  background: #fff3e0;
+  color: #ef6c00;
+}
+
+.reservation-room-status.unavailable {
+  background: #f5f5f5;
+  color: #757575;
+}
+
+.reservation-room-item.selected .reservation-room-status.available {
+  background: #2e7d32;
+  color: #fff;
 }

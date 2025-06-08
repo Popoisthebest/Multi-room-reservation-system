@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>관리자 페이지 - DAESHILL</title>
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="css/admin.css" />
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="header-container">
+        <div class="logo">
+          <a href="index.html">DAESHILL</a>
+        </div>
+        <nav class="main-nav">
+          <a href="index.html">홈</a>
+          <a href="calendar.html">예약하기</a>
+          <a href="reservationStatus.html">예약 현황</a>
+          <a href="mypage.html">마이페이지</a>
+        </nav>
+        <div class="auth-buttons">
+          <button id="logoutButton" class="auth-button">로그아웃</button>
+        </div>
+      </div>
+    </header>
+
+    <main class="main-content">
+      <div class="admin-container">
+        <h1>관리자 페이지</h1>
+
+        <div class="admin-section">
+          <h2>예약 관리</h2>
+          <div class="room-info">
+            <h3>🏢 1층</h3>
+            <ul>
+              <li>제1 메이커실</li>
+              <li>제2 메이커실</li>
+              <li>목공실 (교사만 신청 가능)</li>
+              <li>레이저실 (교사만 신청 가능)</li>
+            </ul>
+
+            <h3>🏢 2층</h3>
+            <ul>
+              <li>실험실 (교사만 신청 가능)</li>
+              <li>제1 융합실</li>
+              <li>제2 융합실</li>
+            </ul>
+
+            <h3>🏢 3층</h3>
+            <ul>
+              <li>AI실 (신청 불가)</li>
+              <li>컴퓨터실 (신청 불가)</li>
+            </ul>
+
+            <h3>🏢 4층</h3>
+            <ul>
+              <li>미디어실 (시청각실) (교사만 신청 가능)</li>
+              <li>글로벌 라운지 (교사만 신청 가능)</li>
+            </ul>
+          </div>
+          <div class="reservation-list" id="reservationList">
+            <!-- 예약 목록이 여기에 동적으로 추가됩니다 -->
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <footer class="site-footer">
+      <div class="footer-container">
+        <div class="footer-section">
+          <h3>DAESHILL</h3>
+          <p>동아리 활동을 위한 공간 예약 서비스</p>
+        </div>
+        <div class="footer-section">
+          <h3>연락처</h3>
+          <p>이메일: support@multiroom.com</p>
+          <p>전화: 02-1234-5678</p>
+        </div>
+        <div class="footer-section">
+          <h3>운영 시간</h3>
+          <p>평일: 09:00 - 18:00</p>
+          <p>주말: 10:00 - 17:00</p>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2024 DAESHILL. All rights reserved.</p>
+      </div>
+    </footer>
+
+    <script>
+      // Firebase 설정
+      const firebaseConfig = {
+        apiKey: "AIzaSyAen8SrBB-4446BNQP6onn4Xv__aLQDVVU",
+        authDomain: "multi-room-reservation-system.firebaseapp.com",
+        projectId: "multi-room-reservation-system",
+        storageBucket: "multi-room-reservation-system.appspot.com",
+        messagingSenderId: "498301757165",
+        appId: "1:498301757165:web:56230ab27bceee46a1cee4",
+      };
+
+      // Firebase 초기화
+      if (!firebase.apps.length) {
+        firebase.initializeApp(firebaseConfig);
+      }
+
+      // 관리자 권한 확인
+      const checkAdminAuth = () => {
+        const currentUser = localStorage.getItem("currentUser");
+        if (!currentUser) {
+          alert("로그인이 필요합니다.");
+          window.location.href = "login.html";
+          return false;
+        }
+
+        const userData = JSON.parse(currentUser);
+        if (!userData.isAdmin) {
+          alert("관리자만 접근할 수 있는 페이지입니다.");
+          window.location.href = "index.html";
+          return false;
+        }
+
+        return true;
+      };
+
+      // 초기 권한 확인
+      if (!checkAdminAuth()) {
+        // 권한이 없으면 함수 종료
+        throw new Error("Unauthorized access");
+      }
+
+      // 예약 목록 로드
+      async function loadReservations() {
+        const reservationsRef = firebase.firestore().collection("reservations");
+        const snapshot = await reservationsRef
+          .orderBy("createdAt", "desc")
+          .get();
+
+        const reservationList = document.getElementById("reservationList");
+        reservationList.innerHTML = "";
+
+        if (snapshot.empty) {
+          reservationList.innerHTML =
+            '<p class="no-data">등록된 예약이 없습니다.</p>';
+          return;
+        }
+
+        snapshot.forEach((doc) => {
+          const reservation = doc.data();
+          const reservationElement = document.createElement("div");
+          reservationElement.className = "reservation-item";
+          reservationElement.innerHTML = `
+            <div class="reservation-info">
+              <p><strong>날짜:</strong> ${reservation.date}</p>
+              <p><strong>시간:</strong> ${reservation.time}</p>
+              <p><strong>방:</strong> ${reservation.room}</p>
+              <p><strong>예약자:</strong> ${reservation.customer.student}</p>
+              <p><strong>동아리:</strong> ${reservation.customer.club}</p>
+              <p><strong>연락처:</strong> ${reservation.customer.contact}</p>
+              <p><strong>이메일:</strong> ${reservation.customer.email}</p>
+              <p><strong>목적:</strong> ${reservation.customer.purpose}</p>
+            </div>
+            <div class="reservation-actions">
+              <button onclick="cancelReservation('${doc.id}')" class="button button-danger">예약 취소</button>
+            </div>
+          `;
+          reservationList.appendChild(reservationElement);
+        });
+      }
+
+      // 예약 취소
+      async function cancelReservation(reservationId) {
+        if (!confirm("정말로 이 예약을 취소하시겠습니까?")) {
+          return;
+        }
+
+        try {
+          await firebase
+            .firestore()
+            .collection("reservations")
+            .doc(reservationId)
+            .delete();
+          alert("예약이 취소되었습니다.");
+          loadReservations();
+        } catch (error) {
+          console.error("예약 취소 중 오류:", error);
+          alert("예약 취소 중 오류가 발생했습니다.");
+        }
+      }
+
+      // 로그아웃
+      document.getElementById("logoutButton").addEventListener("click", () => {
+        localStorage.removeItem("currentUser");
+        window.location.href = "index.html";
+      });
+
+      // 초기 데이터 로드
+      loadReservations();
+    </script>
+  </body>
+</html>

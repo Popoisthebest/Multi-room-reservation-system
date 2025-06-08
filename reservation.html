@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>예약하기 - DAESHILL</title>
+    <link rel="stylesheet" href="styles.css" />
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="header-container">
+        <div class="logo">
+          <a href="index.html">DAESHILL</a>
+        </div>
+        <nav class="main-nav">
+          <a href="index.html">홈</a>
+          <a href="reservation.html" class="active">예약하기</a>
+          <a href="reservationStatus.html">예약 현황</a>
+          <a href="mypage.html">마이페이지</a>
+        </nav>
+        <div class="auth-buttons">
+          <button id="loginButton" class="auth-button">로그인</button>
+          <button id="signupButton" class="auth-button">회원가입</button>
+          <button id="logoutButton" class="auth-button" style="display: none">
+            로그아웃
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <main class="main-content">
+      <div class="reservation-container">
+        <h2 class="reservation-title">예약하기</h2>
+
+        <!-- 단계 표시 -->
+        <div class="reservation-steps">
+          <div class="step active" id="step1">
+            <span class="step-number">1</span>
+            <span class="step-text">호실 선택</span>
+          </div>
+          <div class="step" id="step2">
+            <span class="step-number">2</span>
+            <span class="step-text">날짜 선택</span>
+          </div>
+          <div class="step" id="step3">
+            <span class="step-number">3</span>
+            <span class="step-text">시간 선택</span>
+          </div>
+        </div>
+
+        <!-- 호실 선택 섹션 -->
+        <div class="reservation-section" id="roomSection">
+          <h3>호실 선택</h3>
+          <div class="building">
+            <div class="floor">
+              <div class="floor-label">4층</div>
+              <div class="floor-content">
+                <div class="reservation-room-item" data-room-id="media">
+                  <h4>미디어실 (시청각실)</h4>
+                  <span class="reservation-room-status teacher-only"
+                    >교사만 신청 가능</span
+                  >
+                </div>
+                <div class="reservation-room-item" data-room-id="global">
+                  <h4>글로벌 라운지</h4>
+                  <span class="reservation-room-status teacher-only"
+                    >교사만 신청 가능</span
+                  >
+                </div>
+              </div>
+            </div>
+
+            <div class="floor">
+              <div class="floor-label">3층</div>
+              <div class="floor-content">
+                <div class="reservation-room-item" data-room-id="ai">
+                  <h4>AI실</h4>
+                  <span class="reservation-room-status unavailable"
+                    >신청 불가</span
+                  >
+                </div>
+                <div class="reservation-room-item" data-room-id="computer">
+                  <h4>컴퓨터실</h4>
+                  <span class="reservation-room-status unavailable"
+                    >신청 불가</span
+                  >
+                </div>
+              </div>
+            </div>
+
+            <div class="floor">
+              <div class="floor-label">2층</div>
+              <div class="floor-content">
+                <div class="reservation-room-item" data-room-id="lab">
+                  <h4>실험실</h4>
+                  <span class="reservation-room-status teacher-only"
+                    >교사만 신청 가능</span
+                  >
+                </div>
+                <div class="reservation-room-item" data-room-id="fusion1">
+                  <h4>제1 융합실</h4>
+                  <span class="reservation-room-status available"
+                    >예약 가능</span
+                  >
+                </div>
+                <div class="reservation-room-item" data-room-id="fusion2">
+                  <h4>제2 융합실</h4>
+                  <span class="reservation-room-status available"
+                    >예약 가능</span
+                  >
+                </div>
+              </div>
+            </div>
+
+            <div class="floor">
+              <div class="floor-label">1층</div>
+              <div class="floor-content">
+                <div class="reservation-room-item" data-room-id="maker1">
+                  <h4>제1 메이커실</h4>
+                  <span class="reservation-room-status available"
+                    >예약 가능</span
+                  >
+                </div>
+                <div class="reservation-room-item" data-room-id="maker2">
+                  <h4>제2 메이커실</h4>
+                  <span class="reservation-room-status available"
+                    >예약 가능</span
+                  >
+                </div>
+                <div class="reservation-room-item" data-room-id="woodwork">
+                  <h4>목공실</h4>
+                  <span class="reservation-room-status teacher-only"
+                    >교사만 신청 가능</span
+                  >
+                </div>
+                <div class="reservation-room-item" data-room-id="laser">
+                  <h4>레이저실</h4>
+                  <span class="reservation-room-status teacher-only"
+                    >교사만 신청 가능</span
+                  >
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 날짜 선택 섹션 -->
+        <div class="reservation-section" id="dateSection" style="display: none">
+          <h3>날짜 선택</h3>
+          <div class="week-navigation">
+            <button id="prevWeek">이전 주</button>
+            <span id="currentWeek"></span>
+            <button id="nextWeek">다음 주</button>
+          </div>
+          <div class="week-days">
+            <div class="weekday">월</div>
+            <div class="weekday">화</div>
+            <div class="weekday">수</div>
+            <div class="weekday">목</div>
+          </div>
+          <div id="dateGrid" class="date-grid">
+            <!-- 날짜는 JavaScript로 동적 생성됩니다 -->
+          </div>
+        </div>
+
+        <!-- 시간 선택 섹션 -->
+        <div class="reservation-section" id="timeSection" style="display: none">
+          <h3>시간 선택</h3>
+          <div class="time-slots">
+            <div class="time-slot" data-time="lunch">
+              점심시간 (12:00-13:00)
+            </div>
+            <div class="time-slot" data-time="cip1">CIP1 (13:00-14:00)</div>
+            <div class="time-slot" data-time="cip2">CIP2 (14:00-15:00)</div>
+            <div class="time-slot" data-time="cip3">CIP3 (15:00-16:00)</div>
+          </div>
+        </div>
+
+        <!-- 예약 확인 섹션 -->
+        <div class="reservation-summary" style="display: none">
+          <h3>예약 정보</h3>
+          <div class="summary-content">
+            <p>선택한 실: <span id="selectedRoom">-</span></p>
+            <p>선택한 날짜: <span id="selectedDate">-</span></p>
+            <p>선택한 시간: <span id="selectedTime">-</span></p>
+          </div>
+          <button id="confirmReservation" class="confirm-btn" disabled>
+            예약하기
+          </button>
+        </div>
+
+        <!-- 네비게이션 버튼 -->
+        <div class="reservation-navigation">
+          <button id="prevStep" class="nav-btn" style="display: none">
+            이전
+          </button>
+          <button id="nextStep" class="nav-btn" disabled>다음</button>
+        </div>
+      </div>
+    </main>
+
+    <footer class="site-footer">
+      <div class="footer-container">
+        <div class="footer-section">
+          <h3>DAESHILL</h3>
+          <p>동아리 활동을 위한 공간 예약 서비스</p>
+        </div>
+        <div class="footer-section">
+          <h3>제작자</h3>
+          <p><a href="https://github.com/Popoisthebest">#Popoisthebest</a></p>
+          <p><a href="https://github.com/CloudR1ng">#CloudR1ng</a></p>
+          <p><a href="https://github.com/UntameDuck">#UntameDuck</a></p>
+        </div>
+        <div class="footer-section">
+          <h3>예약 시간</h3>
+          <p>예약 간격은 한 주 단위이며,</p>
+          <p>취소는 당일 오전 8시까지 가능합니다.</p>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2025 A.C.T.(KE) All rights reserved.</p>
+      </div>
+    </footer>
+
+    <!-- JavaScript 파일 로드 -->
+    <script src="js/common.js"></script>
+    <script src="js/reservation.js"></script>
+  </body>
+</html>

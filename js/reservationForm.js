@@ -47,7 +47,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 // 입력값 유효성 검사 함수들
 function validateStudentId(studentId) {
-  return /^\d{8}$/.test(studentId);
+  return /^\d{5}$/.test(studentId);
 }
 
 function validateEmail(email) {
@@ -74,7 +74,7 @@ function validateInput(input) {
   switch (input.id) {
     case "student-id":
       isValid = validateStudentId(input.value);
-      message = "8자리 숫자만 입력 가능합니다.";
+      message = "5자리 숫자만 입력 가능합니다.";
       break;
     case "email":
       isValid = validateEmail(input.value);

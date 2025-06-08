@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>홈 - 멀티룸 예약 시스템</title>
+    <title>DAESHILL</title>
     <link rel="stylesheet" href="styles.css" />
     <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
@@ -13,11 +13,11 @@
     <header class="site-header">
       <div class="header-container">
         <div class="logo">
-          <a href="index.html">멀티룸 예약 시스템</a>
+          <a href="index.html">DAESHILL</a>
         </div>
         <nav class="main-nav">
           <a href="index.html" class="active">홈</a>
-          <a href="reservationForm.html">예약하기</a>
+          <a href="reservation.html">예약하기</a>
           <a href="reservationStatus.html">예약 현황</a>
           <a href="mypage.html">마이페이지</a>
         </nav>
@@ -34,13 +34,88 @@
     <main class="main-content">
       <section class="hero-section">
         <div class="hero-content">
-          <h1>동아리 활동을 위한 공간 예약</h1>
-          <p>멀티룸 예약 시스템을 통해 편리하게 공간을 예약하세요.</p>
+          <h1>다양한 활동을 위한 공간 예약</h1>
+          <p>DAESHILL을 통해 편리하게 공간을 예약하세요.</p>
           <div class="hero-buttons">
-            <a href="calendar.html" class="button button-primary">예약하기</a>
+            <a href="reservation.html" class="button button-primary"
+              >예약하기</a
+            >
             <a href="reservationStatus.html" class="button button-secondary"
               >예약 현황 보기</a
             >
+          </div>
+        </div>
+      </section>
+
+      <section class="rooms-section">
+        <h2>예약 가능한 공간</h2>
+        <div class="building">
+          <div class="floor">
+            <div class="floor-label">4층</div>
+            <div class="floor-content">
+              <div class="room-item">
+                <h4>미디어실 (시청각실)</h4>
+                <span class="room-status teacher-only">교사만 신청 가능</span>
+              </div>
+              <div class="room-item">
+                <h4>글로벌 라운지</h4>
+                <span class="room-status teacher-only">교사만 신청 가능</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="floor">
+            <div class="floor-label">3층</div>
+            <div class="floor-content">
+              <div class="room-item">
+                <h4>AI실</h4>
+                <span class="room-status unavailable">신청 불가</span>
+              </div>
+              <div class="room-item">
+                <h4>컴퓨터실</h4>
+                <span class="room-status unavailable">신청 불가</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="floor">
+            <div class="floor-label">2층</div>
+            <div class="floor-content">
+              <div class="room-item">
+                <h4>실험실</h4>
+                <span class="room-status teacher-only">교사만 신청 가능</span>
+              </div>
+              <div class="room-item">
+                <h4>제1 융합실</h4>
+                <span class="room-status available">예약 가능</span>
+              </div>
+              <div class="room-item">
+                <h4>제2 융합실</h4>
+                <span class="room-status available">예약 가능</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="floor">
+            <div class="floor-label">1층</div>
+            <div class="floor-content">
+              <div class="room-item">
+                <h4>제1 메이커실</h4>
+                <span class="room-status available">예약 가능</span>
+              </div>
+              <div class="room-item">
+                <h4>제2 메이커실</h4>
+                <span class="room-status available">예약 가능</span>
+              </div>
+              <div class="room-item">
+                <h4>목공실</h4>
+                <span class="room-status teacher-only">교사만 신청 가능</span>
+              </div>
+              <div class="room-item">
+                <h4>레이저실</h4>
+                <span class="room-status teacher-only">교사만 신청 가능</span>
+              </div>
+            </div>
           </div>
         </div>
       </section>
@@ -59,42 +134,9 @@
             <p>현재 예약된 공간을 한눈에 확인할 수 있습니다.</p>
           </div>
           <div class="feature-card">
-            <div class="feature-icon">📱</div>
-            <h3>모바일 지원</h3>
-            <p>모바일에서도 편리하게 예약할 수 있습니다.</p>
-          </div>
-        </div>
-      </section>
-
-      <section class="rooms-section">
-        <h2>예약 가능한 공간</h2>
-        <div class="rooms-grid">
-          <div class="room-card">
-            <h3>회의실 A</h3>
-            <p>최대 10명 수용 가능한 회의실</p>
-            <ul>
-              <li>프로젝터</li>
-              <li>화이트보드</li>
-              <li>음향 시스템</li>
-            </ul>
-          </div>
-          <div class="room-card">
-            <h3>연습실 B</h3>
-            <p>음악 연습을 위한 공간</p>
-            <ul>
-              <li>음향 장비</li>
-              <li>악기 보관함</li>
-              <li>음향 차단</li>
-            </ul>
-          </div>
-          <div class="room-card">
-            <h3>스터디룸 C</h3>
-            <p>조용한 학습 공간</p>
-            <ul>
-              <li>개인 책상</li>
-              <li>무선 인터넷</li>
-              <li>조명 조절</li>
-            </ul>
+            <div class="feature-icon">💻</div>
+            <h3>패드 지원</h3>
+            <p>패드에서도 편리하게 예약할 수 있습니다.</p>
           </div>
         </div>
       </section>
@@ -103,22 +145,23 @@
     <footer class="site-footer">
       <div class="footer-container">
         <div class="footer-section">
-          <h3>멀티룸 예약 시스템</h3>
+          <h3>DAESHILL</h3>
           <p>동아리 활동을 위한 공간 예약 서비스</p>
         </div>
         <div class="footer-section">
-          <h3>연락처</h3>
-          <p>이메일: support@multiroom.com</p>
-          <p>전화: 02-1234-5678</p>
+          <h3>제작자</h3>
+          <p><a href="https://github.com/Popoisthebest">#Popoisthebest</a></p>
+          <p><a href="https://github.com/CloudR1ng">#CloudR1ng</a></p>
+          <p><a href="https://github.com/UntameDuck">#UntameDuck</a></p>
         </div>
         <div class="footer-section">
-          <h3>운영 시간</h3>
-          <p>평일: 09:00 - 18:00</p>
-          <p>주말: 10:00 - 17:00</p>
+          <h3>예약 시간</h3>
+          <p>예약 간격은 한 주 단위이며,</p>
+          <p>취소는 당일 오전 8시까지 가능합니다.</p>
         </div>
       </div>
       <div class="footer-bottom">
-        <p>&copy; 2024 멀티룸 예약 시스템. All rights reserved.</p>
+        <p>&copy; 2025 A.C.T.(KE) All rights reserved.</p>
       </div>
     </footer>
 
