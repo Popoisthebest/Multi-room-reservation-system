@@ -1,52 +1,164 @@
 <!DOCTYPE html>
 <html lang="ko">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>예약 정보 입력</title>
-    <link rel="stylesheet" href="styles.css">
-</head>
-<body>
-    <div class="container">
-        <h1>선택 멀티실 리스트</h1>
-        <div class="product-info" id="product-info">
-            <!-- 선택한 상품 정보가 여기 표시됩니다 -->
+    <link rel="stylesheet" href="styles.css" />
+    <!-- Firebase SDK 추가 -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+  </head>
+  <body>
+    <div class="container" role="main">
+      <h1>선택 멀티실 리스트</h1>
+      <div
+        class="product-info"
+        id="product-info"
+        role="region"
+        aria-label="선택한 상품 정보"
+      >
+        <!-- 선택한 상품 정보가 여기 표시됩니다 -->
+      </div>
+
+      <h1>예약 정보</h1>
+      <form id="reservation-form" role="form" aria-label="예약 정보 입력 폼">
+        <div class="form-group">
+          <label for="club" id="club-label"
+            >동아리(단체) <span aria-hidden="true">*</span></label
+          >
+          <input
+            type="text"
+            id="club"
+            name="club"
+            required
+            aria-required="true"
+            aria-labelledby="club-label"
+            aria-describedby="club-error"
+          />
+        </div>
+        <div class="form-group">
+          <label for="student-id" id="student-id-label"
+            >학번 <span aria-hidden="true">*</span></label
+          >
+          <input
+            type="text"
+            id="student-id"
+            name="student-id"
+            required
+            aria-required="true"
+            aria-labelledby="student-id-label"
+            aria-describedby="student-id-error"
+            pattern="\d{5}"
+            maxlength="5"
+            title="5자리 숫자만 입력 가능합니다"
+          />
+        </div>
+        <div class="form-group">
+          <label for="student-name" id="student-name-label"
+            >이름 <span aria-hidden="true">*</span></label
+          >
+          <input
+            type="text"
+            id="student-name"
+            name="student-name"
+            required
+            aria-required="true"
+            aria-labelledby="student-name-label"
+            aria-describedby="student-name-error"
+          />
         </div>
 
-        <h1>예약 정보</h1>
-        <form id="reservation-form">
-            <div class="form-group">
-                <label for="club">동아리(단체) <span>*</span></label>
-                <input type="text" id="club" name="club" required>
-            </div>
-            <div class="form-group">
-                <label for="student-info">학번 - 이름 <span>*</span></label>
-                <div class="contact-input">
-                    <input type="text" id="student-id" placeholder="학번">
-                    <input type="text" id="student-name" placeholder="이름">
-                </div>
-            </div>
-            
-            <div class="form-group">
-                <label for="contact">연락처 <span>*</span></label>
-                <div class="contact-input">
-                    <span style="width: 50px; text-align: center; display: inline-block; color: black; padding-top: 8px;">010</span>
-                    <input type="text" id="contact-middle" maxlength="4" required>
-                    <input type="text" id="contact-last" maxlength="4" required>
-                </div>
-            </div>
-            <div class="form-group">
-                <label for="email">이메일</label>
-                <input type="email" id="email" name="email" placeholder="예: example@domain.com" required>
-            </div>
-            <div class="form-group">
-                <label for="purpose">사용 목적 <span>*</span></label>
-                <textarea id="purpose" name="purpose" placeholder="※ 사용 목적을 입력하세요." required></textarea>
-            </div>
-            <button type="submit">예약하기</button>
-        </form>
+        <div class="form-group">
+          <label id="contact-label"
+            >연락처 <span aria-hidden="true">*</span></label
+          >
+          <div
+            class="contact-input"
+            role="group"
+            aria-labelledby="contact-label"
+          >
+            <span
+              aria-hidden="true"
+              style="
+                width: 50px;
+                text-align: center;
+                display: inline-block;
+                color: black;
+                padding-top: 8px;
+              "
+              >010</span
+            >
+            <input
+              type="text"
+              id="contact-middle"
+              maxlength="4"
+              required
+              aria-required="true"
+              aria-label="연락처 중간자리"
+              pattern="\d{4}"
+              title="4자리 숫자만 입력 가능합니다"
+            />
+            <input
+              type="text"
+              id="contact-last"
+              maxlength="4"
+              required
+              aria-required="true"
+              aria-label="연락처 뒷자리"
+              pattern="\d{4}"
+              title="4자리 숫자만 입력 가능합니다"
+            />
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="email" id="email-label">이메일</label>
+          <input
+            type="email"
+            id="email"
+            name="email"
+            required
+            aria-required="true"
+            aria-labelledby="email-label"
+            aria-describedby="email-error"
+            placeholder="예: example@domain.com"
+          />
+        </div>
+        <div class="form-group">
+          <label for="purpose" id="purpose-label"
+            >사용 목적 <span aria-hidden="true">*</span></label
+          >
+          <textarea
+            id="purpose"
+            name="purpose"
+            required
+            aria-required="true"
+            aria-labelledby="purpose-label"
+            aria-describedby="purpose-error"
+            placeholder="※ 사용 목적을 입력하세요. (10자 이상)"
+            minlength="10"
+          ></textarea>
+        </div>
+        <button type="submit" aria-label="예약하기">예약하기</button>
+      </form>
     </div>
 
+    <script>
+      // Firebase 설정
+      const firebaseConfig = {
+        apiKey: "AIzaSyAen8SrBB-4446BNQP6onn4Xv__aLQDVVU",
+        authDomain: "multi-room-reservation-system.firebaseapp.com",
+        projectId: "multi-room-reservation-system",
+        storageBucket: "multi-room-reservation-system.appspot.com",
+        messagingSenderId: "498301757165",
+        appId: "1:498301757165:web:56230ab27bceee46a1cee4",
+      };
+
+      // Firebase 초기화
+      if (!firebase.apps.length) {
+        firebase.initializeApp(firebaseConfig);
+      }
+    </script>
     <script type="module" src="./js/reservationForm.js"></script>
-</body>
+  </body>
 </html>

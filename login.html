@@ -3,11 +3,12 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>홈 - 멀티룸 예약 시스템</title>
+    <title>로그인 - 멀티룸 예약 시스템</title>
     <link rel="stylesheet" href="styles.css" />
     <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
   </head>
   <body>
     <header class="site-header">
@@ -16,8 +17,8 @@
           <a href="index.html">멀티룸 예약 시스템</a>
         </div>
         <nav class="main-nav">
-          <a href="index.html" class="active">홈</a>
-          <a href="reservationForm.html">예약하기</a>
+          <a href="index.html">홈</a>
+          <a href="calendar.html">예약하기</a>
           <a href="reservationStatus.html">예약 현황</a>
           <a href="mypage.html">마이페이지</a>
         </nav>
@@ -32,72 +33,27 @@
     </header>
 
     <main class="main-content">
-      <section class="hero-section">
-        <div class="hero-content">
-          <h1>동아리 활동을 위한 공간 예약</h1>
-          <p>멀티룸 예약 시스템을 통해 편리하게 공간을 예약하세요.</p>
-          <div class="hero-buttons">
-            <a href="calendar.html" class="button button-primary">예약하기</a>
-            <a href="reservationStatus.html" class="button button-secondary"
-              >예약 현황 보기</a
-            >
-          </div>
+      <div class="auth-container">
+        <div class="auth-card">
+          <h2>로그인</h2>
+          <form id="loginForm" class="auth-form">
+            <div class="form-group">
+              <label for="email">이메일</label>
+              <input type="email" id="email" name="email" required />
+            </div>
+            <div class="form-group">
+              <label for="password">비밀번호</label>
+              <input type="password" id="password" name="password" required />
+            </div>
+            <div class="form-actions">
+              <button type="submit" class="button button-primary">
+                로그인
+              </button>
+              <a href="signup.html" class="button button-secondary">회원가입</a>
+            </div>
+          </form>
         </div>
-      </section>
-
-      <section class="features-section">
-        <h2>주요 기능</h2>
-        <div class="features-grid">
-          <div class="feature-card">
-            <div class="feature-icon">📅</div>
-            <h3>실시간 예약</h3>
-            <p>원하는 날짜와 시간에 실시간으로 예약할 수 있습니다.</p>
-          </div>
-          <div class="feature-card">
-            <div class="feature-icon">🔍</div>
-            <h3>예약 현황 확인</h3>
-            <p>현재 예약된 공간을 한눈에 확인할 수 있습니다.</p>
-          </div>
-          <div class="feature-card">
-            <div class="feature-icon">📱</div>
-            <h3>모바일 지원</h3>
-            <p>모바일에서도 편리하게 예약할 수 있습니다.</p>
-          </div>
-        </div>
-      </section>
-
-      <section class="rooms-section">
-        <h2>예약 가능한 공간</h2>
-        <div class="rooms-grid">
-          <div class="room-card">
-            <h3>회의실 A</h3>
-            <p>최대 10명 수용 가능한 회의실</p>
-            <ul>
-              <li>프로젝터</li>
-              <li>화이트보드</li>
-              <li>음향 시스템</li>
-            </ul>
-          </div>
-          <div class="room-card">
-            <h3>연습실 B</h3>
-            <p>음악 연습을 위한 공간</p>
-            <ul>
-              <li>음향 장비</li>
-              <li>악기 보관함</li>
-              <li>음향 차단</li>
-            </ul>
-          </div>
-          <div class="room-card">
-            <h3>스터디룸 C</h3>
-            <p>조용한 학습 공간</p>
-            <ul>
-              <li>개인 책상</li>
-              <li>무선 인터넷</li>
-              <li>조명 조절</li>
-            </ul>
-          </div>
-        </div>
-      </section>
+      </div>
     </main>
 
     <footer class="site-footer">
@@ -140,20 +96,41 @@
 
       // 로그인 상태 확인
       firebase.auth().onAuthStateChanged((user) => {
-        const loginButton = document.getElementById("loginButton");
-        const signupButton = document.getElementById("signupButton");
-        const logoutButton = document.getElementById("logoutButton");
-
         if (user) {
-          loginButton.style.display = "none";
-          signupButton.style.display = "none";
-          logoutButton.style.display = "block";
-        } else {
-          loginButton.style.display = "block";
-          signupButton.style.display = "block";
-          logoutButton.style.display = "none";
+          window.location.href = "index.html";
         }
       });
+
+      // 로그인 폼 제출 처리
+      document
+        .getElementById("loginForm")
+        .addEventListener("submit", async (e) => {
+          e.preventDefault();
+
+          const email = document.getElementById("email").value;
+          const password = document.getElementById("password").value;
+
+          try {
+            await firebase.auth().signInWithEmailAndPassword(email, password);
+            window.location.href = "index.html";
+          } catch (error) {
+            let errorMessage = "로그인 중 오류가 발생했습니다.";
+
+            switch (error.code) {
+              case "auth/user-not-found":
+                errorMessage = "등록되지 않은 이메일입니다.";
+                break;
+              case "auth/wrong-password":
+                errorMessage = "잘못된 비밀번호입니다.";
+                break;
+              case "auth/invalid-email":
+                errorMessage = "유효하지 않은 이메일 형식입니다.";
+                break;
+            }
+
+            alert(errorMessage);
+          }
+        });
 
       // 버튼 이벤트 리스너
       document.getElementById("loginButton").addEventListener("click", () => {

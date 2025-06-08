@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>마이페이지 - 멀티룸 예약 시스템</title>
+    <link rel="stylesheet" href="styles.css" />
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+  </head>
+  <body>
+    <div class="container">
+      <nav class="top-nav">
+        <div class="nav-links">
+          <a href="index.html">홈</a>
+          <a href="reservationForm.html">예약하기</a>
+          <a href="reservationStatus.html">예약 현황</a>
+          <a href="mypage.html" class="active">마이페이지</a>
+        </div>
+        <button id="logoutButton" class="logout-button">로그아웃</button>
+      </nav>
+
+      <div class="mypage-container">
+        <div class="user-info-section">
+          <h2>내 정보</h2>
+          <div class="user-info">
+            <p><strong>이름:</strong> <span id="userName"></span></p>
+            <p><strong>학번:</strong> <span id="userStudentId"></span></p>
+            <p><strong>동아리:</strong> <span id="userClub"></span></p>
+            <p><strong>이메일:</strong> <span id="userEmail"></span></p>
+            <p><strong>연락처:</strong> <span id="userContact"></span></p>
+          </div>
+        </div>
+
+        <div class="reservation-section">
+          <h2>내 예약 현황</h2>
+          <div class="reservation-filters">
+            <div class="filter-group">
+              <label for="dateFilter">날짜</label>
+              <input type="date" id="dateFilter" class="filter-input" />
+            </div>
+            <div class="filter-group">
+              <label for="statusFilter">상태</label>
+              <select id="statusFilter" class="filter-input">
+                <option value="all">전체</option>
+                <option value="upcoming">예정된 예약</option>
+                <option value="past">지난 예약</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="reservation-list" id="reservationList">
+            <!-- 예약 목록이 여기에 동적으로 추가됩니다 -->
+          </div>
+
+          <div class="empty-state" id="emptyState" style="display: none">
+            <div class="empty-icon">📅</div>
+            <h2>예약 내역이 없습니다</h2>
+            <p>새로운 예약을 진행해보세요.</p>
+          </div>
+
+          <div
+            class="loading-spinner"
+            id="loadingSpinner"
+            style="display: none"
+          >
+            <div class="spinner"></div>
+            <p>예약 정보를 불러오는 중...</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // Firebase 설정
+      const firebaseConfig = {
+        apiKey: "AIzaSyAen8SrBB-4446BNQP6onn4Xv__aLQDVVU",
+        authDomain: "multi-room-reservation-system.firebaseapp.com",
+        projectId: "multi-room-reservation-system",
+        storageBucket: "multi-room-reservation-system.appspot.com",
+        messagingSenderId: "498301757165",
+        appId: "1:498301757165:web:56230ab27bceee46a1cee4",
+      };
+
+      // Firebase 초기화
+      if (!firebase.apps.length) {
+        firebase.initializeApp(firebaseConfig);
+      }
+
+      // 로그인 상태 확인
+      firebase.auth().onAuthStateChanged(async (user) => {
+        if (!user) {
+          // 로그인되지 않은 상태라면 로그인 페이지로 이동
+          window.location.href = "login.html";
+          return;
+        }
+
+        // 사용자 정보 로드
+        try {
+          const userDoc = await firebase
+            .firestore()
+            .collection("users")
+            .doc(user.uid)
+            .get();
+          if (userDoc.exists) {
+            const userData = userDoc.data();
+            document.getElementById("userName").textContent = userData.name;
+            document.getElementById("userStudentId").textContent =
+              userData.studentId;
+            document.getElementById("userClub").textContent = userData.club;
+            document.getElementById("userEmail").textContent = userData.email;
+            document.getElementById("userContact").textContent =
+              userData.contact;
+          }
+        } catch (error) {
+          console.error("사용자 정보 로드 중 오류:", error);
+        }
+
+        // 예약 목록 로드
+        loadReservations(user.uid);
+      });
+
+      // 예약 목록 로드
+      async function loadReservations(userId) {
+        const loadingSpinner = document.getElementById("loadingSpinner");
+        const emptyState = document.getElementById("emptyState");
+        const reservationList = document.getElementById("reservationList");
+
+        loadingSpinner.style.display = "flex";
+        reservationList.innerHTML = "";
+        emptyState.style.display = "none";
+
+        try {
+          const db = firebase.firestore();
+          const snapshot = await db
+            .collection("reservations")
+            .where("userId", "==", userId)
+            .get();
+
+          if (snapshot.empty) {
+            emptyState.style.display = "flex";
+            return;
+          }
+
+          const reservations = [];
+          snapshot.forEach((doc) => {
+            reservations.push({ id: doc.id, ...doc.data() });
+          });
+
+          // 날짜순으로 정렬
+          reservations.sort((a, b) => new Date(a.date) - new Date(b.date));
+
+          // 예약 목록 렌더링
+          renderReservations(reservations);
+        } catch (error) {
+          console.error("예약 목록 로드 중 오류:", error);
+          showError("예약 목록을 불러오는 중 오류가 발생했습니다.");
+        } finally {
+          loadingSpinner.style.display = "none";
+        }
+      }
+
+      // 예약 목록 렌더링
+      function renderReservations(reservations) {
+        const reservationList = document.getElementById("reservationList");
+        const dateFilter = document.getElementById("dateFilter").value;
+        const statusFilter = document.getElementById("statusFilter").value;
+        const today = new Date();
+
+        reservations = reservations.filter((reservation) => {
+          const reservationDate = new Date(reservation.date);
+
+          // 날짜 필터
+          if (dateFilter && reservation.date !== dateFilter) {
+            return false;
+          }
+
+          // 상태 필터
+          if (statusFilter === "upcoming" && reservationDate < today) {
+            return false;
+          }
+          if (statusFilter === "past" && reservationDate >= today) {
+            return false;
+          }
+
+          return true;
+        });
+
+        if (reservations.length === 0) {
+          document.getElementById("emptyState").style.display = "flex";
+          return;
+        }
+
+        reservations.forEach((reservation) => {
+          const card = createReservationCard(reservation);
+          reservationList.appendChild(card);
+        });
+      }
+
+      // 예약 카드 생성
+      function createReservationCard(reservation) {
+        const card = document.createElement("div");
+        card.className = "reservation-card";
+
+        const reservationDate = new Date(reservation.date);
+        const isPast = reservationDate < new Date();
+
+        card.innerHTML = `
+                <div class="reservation-header">
+                    <h3>${reservation.room}</h3>
+                    <span class="status-badge ${isPast ? "past" : "upcoming"}">
+                        ${isPast ? "지난 예약" : "예정된 예약"}
+                    </span>
+                </div>
+                <div class="reservation-info">
+                    <p><strong>날짜:</strong> ${formatDate(
+                      reservation.date
+                    )}</p>
+                    <p><strong>시간:</strong> ${reservation.time}</p>
+                    <p><strong>동아리:</strong> ${reservation.customer.club}</p>
+                    <p><strong>사용 목적:</strong> ${
+                      reservation.customer.purpose
+                    }</p>
+                </div>
+                ${
+                  !isPast
+                    ? `
+                    <div class="reservation-actions">
+                        <button class="cancel-button" onclick="showCancelModal('${reservation.id}')">
+                            예약 취소
+                        </button>
+                    </div>
+                `
+                    : ""
+                }
+            `;
+
+        return card;
+      }
+
+      // 날짜 포맷팅
+      function formatDate(dateStr) {
+        const date = new Date(dateStr);
+        return date.toLocaleDateString("ko-KR", {
+          year: "numeric",
+          month: "long",
+          day: "numeric",
+          weekday: "long",
+        });
+      }
+
+      // 필터 변경 이벤트 리스너
+      document.getElementById("dateFilter").addEventListener("change", () => {
+        const userId = firebase.auth().currentUser.uid;
+        loadReservations(userId);
+      });
+
+      document.getElementById("statusFilter").addEventListener("change", () => {
+        const userId = firebase.auth().currentUser.uid;
+        loadReservations(userId);
+      });
+
+      // 로그아웃
+      document
+        .getElementById("logoutButton")
+        .addEventListener("click", async () => {
+          try {
+            await firebase.auth().signOut();
+            window.location.href = "login.html";
+          } catch (error) {
+            console.error("로그아웃 중 오류:", error);
+          }
+        });
+
+      // 에러 메시지 표시
+      function showError(message) {
+        const toast = document.createElement("div");
+        toast.className = "toast error";
+        toast.textContent = message;
+        document.body.appendChild(toast);
+
+        setTimeout(() => {
+          toast.remove();
+        }, 3000);
+      }
+    </script>
+  </body>
+</html>

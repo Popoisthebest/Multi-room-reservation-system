@@ -1,36 +1,306 @@
 <!DOCTYPE html>
 <html lang="ko">
-<head>
-    <meta charset="UTF-8">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>예약 취소</title>
-    <link rel="stylesheet" href="styles.css">
-</head>
-<body>
+    <link rel="stylesheet" href="styles.css" />
+    <!-- Firebase SDK 추가 -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+  </head>
+  <body>
     <div class="container">
-        <h1>예약 취소</h1>
-        <form id="search-reservation-form">
-            <div class="form-group">
-                <label for="student-id">학번</label>
-                <input type="text" id="student-id" required>
-            </div>
-            <div class="form-group">
-                <label for="student-name">이름</label>
-                <input type="text" id="student-name" required>
-            </div>
-            <div class="form-group">
-                <label for="email">이메일</label>
-                <input type="email" id="email" required>
-            </div>
-            <button type="submit" class="search-button">예약 조회</button>
-        </form>
+      <h1>예약 취소</h1>
 
-        <div id="reservation-list" class="reservation-list">
-            <!-- 예약된 모든 날짜, 장소, 시간이 카드 형식으로 표시됩니다 -->
+      <div class="search-section">
+        <div class="search-box">
+          <div class="search-input-group">
+            <input
+              type="text"
+              id="search-student"
+              placeholder="학번"
+              class="search-input"
+            />
+            <input
+              type="text"
+              id="search-name"
+              placeholder="이름"
+              class="search-input"
+            />
+            <input
+              type="email"
+              id="search-email"
+              placeholder="이메일"
+              class="search-input"
+            />
+          </div>
+          <button id="search-button" class="search-button">검색</button>
         </div>
+      </div>
 
-        <button id="cancel-selected-button" class="cancel-button" style="display: none;">선택한 예약 취소</button>
+      <div class="reservation-list" id="reservation-list">
+        <!-- 예약 목록이 여기에 동적으로 추가됩니다 -->
+      </div>
+
+      <div class="empty-state" id="empty-state" style="display: none">
+        <div class="empty-icon">🔍</div>
+        <h2>예약을 찾을 수 없습니다</h2>
+        <p>학번 또는 이름으로 예약을 검색해주세요.</p>
+      </div>
+
+      <div class="loading-spinner" id="loading-spinner" style="display: none">
+        <div class="spinner"></div>
+        <p>예약 정보를 불러오는 중...</p>
+      </div>
+
+      <!-- 취소 확인 모달 -->
+      <div class="modal" id="cancel-modal" style="display: none">
+        <div class="modal-content" id="modalContent">
+          <!-- 모달 내용이 동적으로 추가됩니다 -->
+        </div>
+      </div>
     </div>
 
-    <script type="module" src="./js/cancelReservation.js"></script>
-</body>
+    <script>
+      // Firebase 설정
+      const firebaseConfig = {
+        apiKey: "AIzaSyAen8SrBB-4446BNQP6onn4Xv__aLQDVVU",
+        authDomain: "multi-room-reservation-system.firebaseapp.com",
+        projectId: "multi-room-reservation-system",
+        storageBucket: "multi-room-reservation-system.appspot.com",
+        messagingSenderId: "498301757165",
+        appId: "1:498301757165:web:56230ab27bceee46a1cee4",
+      };
+
+      // Firebase 초기화
+      if (!firebase.apps.length) {
+        firebase.initializeApp(firebaseConfig);
+      }
+
+      let reservations = []; // 전역 변수로 예약 목록 저장
+
+      // 예약 검색
+      async function searchReservations() {
+        const studentId = document
+          .getElementById("search-student")
+          .value.trim();
+        const name = document.getElementById("search-name").value.trim();
+        const email = document.getElementById("search-email").value.trim();
+        const loadingSpinner = document.getElementById("loading-spinner");
+        const emptyState = document.getElementById("empty-state");
+        const reservationList = document.getElementById("reservation-list");
+
+        if (!studentId || !name || !email) {
+          showError("학번, 이름, 이메일을 모두 입력해주세요.");
+          return;
+        }
+
+        loadingSpinner.style.display = "flex";
+        reservationList.innerHTML = "";
+        emptyState.style.display = "none";
+
+        try {
+          const db = firebase.firestore();
+          const reservationsRef = db.collection("reservations");
+          const snapshot = await reservationsRef.get();
+
+          if (snapshot.empty) {
+            emptyState.style.display = "flex";
+            return;
+          }
+
+          reservations = []; // 전역 변수 초기화
+          snapshot.forEach((doc) => {
+            const data = doc.data();
+            if (
+              data.customer.student === studentId &&
+              data.customer.name === name &&
+              data.customer.email === email
+            ) {
+              reservations.push({ id: doc.id, ...data });
+            }
+          });
+
+          if (reservations.length === 0) {
+            emptyState.style.display = "flex";
+            return;
+          }
+
+          // 날짜순으로 정렬
+          reservations.sort((a, b) => new Date(a.date) - new Date(b.date));
+
+          // 예약 목록 렌더링
+          renderReservations(reservations);
+        } catch (error) {
+          console.error("예약 검색 오류:", error);
+          showError("예약 검색 중 오류가 발생했습니다.");
+        } finally {
+          loadingSpinner.style.display = "none";
+        }
+      }
+
+      // 예약 목록 렌더링
+      function renderReservations(reservations) {
+        const reservationList = document.getElementById("reservation-list");
+
+        reservations.forEach((reservation) => {
+          const card = createReservationCard(reservation);
+          reservationList.appendChild(card);
+        });
+      }
+
+      // 예약 카드 생성
+      function createReservationCard(reservation) {
+        const card = document.createElement("div");
+        card.className = "reservation-card";
+
+        card.innerHTML = `
+          <div class="reservation-header">
+            <h3>${reservation.room}</h3>
+          </div>
+          <div class="reservation-info">
+            <p><strong>날짜:</strong> ${formatDate(reservation.date)}</p>
+            <p><strong>시간:</strong> ${reservation.time}</p>
+            <p><strong>동아리:</strong> ${reservation.customer.club}</p>
+            <p><strong>사용 목적:</strong> ${reservation.customer.purpose}</p>
+          </div>
+          <div class="reservation-actions">
+            <button class="cancel-button" onclick="showCancelModal('${
+              reservation.id
+            }')">
+              예약 취소
+            </button>
+          </div>
+        `;
+
+        return card;
+      }
+
+      // 취소 모달 표시
+      function showCancelModal(reservationId) {
+        const modal = document.getElementById("cancel-modal");
+        const modalContent = document.getElementById("modalContent");
+        const reservation = reservations.find((r) => r.id === reservationId);
+
+        if (reservation) {
+          modalContent.innerHTML = `
+            <h2>예약 취소 확인</h2>
+            <div class="modal-body">
+              <p>아래 예약을 취소하시겠습니까?</p>
+              <div class="reservation-details">
+                <p><strong>날짜:</strong> ${formatDate(reservation.date)}</p>
+                <p><strong>시간:</strong> ${reservation.time}</p>
+                <p><strong>방:</strong> ${reservation.room}</p>
+                <p><strong>동아리:</strong> ${reservation.customer.club}</p>
+                <p><strong>사용 목적:</strong> ${
+                  reservation.customer.purpose
+                }</p>
+              </div>
+              <div class="verification-form">
+                <p>본인 확인을 위해 이메일을 입력해주세요.</p>
+                <div class="form-group">
+                  <label for="verifyEmail">이메일</label>
+                  <input type="email" id="verifyEmail" class="verification-input" placeholder="이메일을 입력하세요">
+                </div>
+                <div class="error-message" id="verificationError" style="display: none; color: #dc3545; margin-top: 10px;"></div>
+              </div>
+            </div>
+            <div class="modal-buttons">
+              <button class="close-button" onclick="closeModal()">닫기</button>
+              <button class="cancel-button" onclick="verifyAndCancelReservation('${
+                reservation.id
+              }')">예약 취소</button>
+            </div>
+          `;
+          modal.style.display = "flex";
+        }
+      }
+
+      // 모달 닫기
+      function closeModal() {
+        document.getElementById("cancel-modal").style.display = "none";
+      }
+
+      async function verifyAndCancelReservation(reservationId) {
+        const email = document.getElementById("verifyEmail").value.trim();
+        const errorElement = document.getElementById("verificationError");
+        const reservation = reservations.find((r) => r.id === reservationId);
+
+        if (!email) {
+          errorElement.textContent = "이메일을 입력해주세요.";
+          errorElement.style.display = "block";
+          return;
+        }
+
+        if (email !== reservation.customer.email) {
+          errorElement.textContent = "이메일이 일치하지 않습니다.";
+          errorElement.style.display = "block";
+          return;
+        }
+
+        try {
+          const db = firebase.firestore();
+          await db.collection("reservations").doc(reservationId).delete();
+
+          showSuccess("예약이 취소되었습니다.");
+          closeModal();
+          searchReservations(); // 예약 목록 새로고침
+        } catch (error) {
+          console.error("예약 취소 중 오류 발생:", error);
+          showError("예약 취소 중 오류가 발생했습니다.");
+        }
+      }
+
+      // 날짜 포맷팅
+      function formatDate(dateStr) {
+        const date = new Date(dateStr);
+        return date.toLocaleDateString("ko-KR", {
+          year: "numeric",
+          month: "long",
+          day: "numeric",
+          weekday: "long",
+        });
+      }
+
+      // 성공 메시지 표시
+      function showSuccess(message) {
+        const toast = document.createElement("div");
+        toast.className = "toast success";
+        toast.textContent = message;
+        document.body.appendChild(toast);
+
+        setTimeout(() => {
+          toast.remove();
+        }, 3000);
+      }
+
+      // 에러 메시지 표시
+      function showError(message) {
+        const toast = document.createElement("div");
+        toast.className = "toast error";
+        toast.textContent = message;
+        document.body.appendChild(toast);
+
+        setTimeout(() => {
+          toast.remove();
+        }, 3000);
+      }
+
+      // 이벤트 리스너
+      document
+        .getElementById("search-button")
+        .addEventListener("click", searchReservations);
+      document
+        .getElementById("search-input")
+        .addEventListener("keypress", (e) => {
+          if (e.key === "Enter") {
+            searchReservations();
+          }
+        });
+      document.getElementById("close-modal").addEventListener("click", () => {
+        document.getElementById("cancel-modal").style.display = "none";
+      });
+    </script>
+  </body>
 </html>
